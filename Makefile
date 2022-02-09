@@ -4,9 +4,10 @@ NAME =		scop
 
 CXX = 		clang++
 CXXFLAGS = 	-Wall -Wextra -Werror
-LIBS :=		$(MACOS) -L. -lglfw3 -lGLEW
 
 MACOS =		-framework Cocoa -framework OpenGL -framework IOKit -framework CoreVideo
+
+LIBS :=		-L. -lglfw3 -lGLEW $(MACOS)
 
 MKDIR =		mkdir -p
 RM =		rm -rf
