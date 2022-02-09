@@ -23,7 +23,7 @@ OBJS = 		$(patsubst $(SRCDIR)/%, $(OBJDIR)/%, $(SRCS:.cpp=.o))
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 	@$(MKDIR) $(@D)
-	$(CXX) $(CXXFLAGS) -I $(INCDIR) -c -o $@ $<
+	@$(CXX) $(CXXFLAGS) -I $(INCDIR) -c -o $@ $<
 
 all: $(NAME)
 
