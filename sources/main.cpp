@@ -2,6 +2,8 @@
 
 int main()
 {
-	std::cout << "Hello, World!" << std::endl;
-	printf("Hello, World!\n");
+	GLFWwindow* win = glfwCreateWindow(800, 800, "Scop", NULL, NULL);
+
+	(void)win;
+	while (1) {}
 }

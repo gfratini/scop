@@ -4,7 +4,9 @@ NAME =		scop
 
 CXX = 		clang++
 CXXFLAGS = 	-Wall -Wextra -Werror
-LIBS =		-lglfw3 -lGLEW
+LIBS :=		$(MACOS) -L. -lglfw3 -lGLEW
+
+MACOS =		-framework Cocoa -framework OpenGL -framework IOKit -framework CoreVideo
 
 MKDIR =		mkdir -p
 RM =		rm -rf
@@ -20,22 +22,24 @@ OBJS = 		$(patsubst $(SRCDIR)/%, $(OBJDIR)/%, $(SRCS:.cpp=.o))
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 	@$(MKDIR) $(@D)
-	@$(CXX) $(CXXFLAGS) $(LIBS) -I $(INCDIR) -c -o $@ $<
+	$(CXX) $(CXXFLAGS) -I $(INCDIR) -c -o $@ $<
 
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	@$(CXX) $(CXXFLAGS) $(OBJS) -o $(NAME)
+	@$(CXX) $(CXXFLAGS) $(LIBS) $(OBJS) -o $(NAME)
 
 install:
 	$(shell sh run.sh || 1)
-	cmake -S glfw-repo -B glfw
-	make -C glfw
-	mv glfw/src/libglfw3.a libglfw3.a
-	make -C glew/auto
-	make -C glew
-	mv glew/lib/libGLEW.a libGLEW.a
-	rm -dir -f glfw-repo glfw glew
+	@cmake -S glfw-repo -B glfw
+	@mv -f glfw-repo/include/GLFW includes/GLFW
+	@make -C glfw
+	@mv glfw/src/libglfw3.a libglfw3.a
+	@make -C glew/auto
+	@make -C glew
+	@mv glew/lib/libGLEW.a libGLEW.a
+	@mv -f glew/include/GL includes/GL
+	@rm -dir -f glfw-repo glfw glew
 
 clean:
 	@$(RM) $(OBJDIR)
