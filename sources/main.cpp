@@ -1,12 +1,26 @@
 #include "main.hpp"
 
-int main()
+int main(void)
 {
-	glfwInit();
-	GLFWwindow* win = glfwCreateWindow(800, 800, "Scop", NULL, NULL);
+	try {
+		if (!glfwInit())
+			return -1;
 
-	glfwMakeContextCurrent(win);
-	glewInit();
+		Window win(640, 480, "Hello World");
 
-	std::cout << "GLEW Version: " << glewGetString(GLEW_VERSION) << std::endl;
+		/* Loop until the user closes the window */
+		while (!win.should_close())
+		{
+			/* Render here */
+			glClear(GL_COLOR_BUFFER_BIT);
+
+			/* Swap front and back buffers */
+			win.swap_buffers();
+
+			win.poll_events();
+		}
+	} catch (std::exception e()) {
+		std::cout << e << std::endl;
+	}
+    return 0;
 }
