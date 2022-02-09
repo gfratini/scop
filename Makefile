@@ -25,22 +25,13 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 	@$(MKDIR) $(@D)
 	@$(CXX) $(CXXFLAGS) -I $(INCDIR) -c -o $@ $<
 
-all: $(NAME)
+all: install $(NAME)
 
 $(NAME): $(OBJS)
 	@$(CXX) $(CXXFLAGS) $(LIBS) $(OBJS) -o $(NAME)
 
 install:
-	$(shell sh run.sh || 1)
-	@cmake -S glfw-repo -B glfw
-	@mv -f glfw-repo/include/GLFW includes/GLFW
-	@make -C glfw
-	@mv glfw/src/libglfw3.a libglfw3.a
-	@make -C glew/auto
-	@make -C glew
-	@mv glew/lib/libGLEW.a libGLEW.a
-	@mv -f glew/include/GL includes/GL
-	@rm -dir -f glfw-repo glfw glew
+	$(shell sh tools/install.sh)
 
 clean:
 	@$(RM) $(OBJDIR)
