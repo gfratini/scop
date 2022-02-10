@@ -111,6 +111,8 @@ $RECYCLE.BIN/
 
 ###
 
+.idea
+
 scop
 includes/GL
 includes/GLFW

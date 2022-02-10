@@ -3,7 +3,7 @@
 NAME =		scop
 
 CXX = 		clang++
-CXXFLAGS = 	-Wall -Wextra -Werror
+CXXFLAGS = 	-Wall -Wextra -Werror -g
 
 MACOS =		-framework Cocoa -framework OpenGL -framework IOKit -framework CoreVideo
 
@@ -16,7 +16,12 @@ SRCDIR = 	./sources
 INCDIR = 	./includes
 OBJDIR =  	./.obj
 
-FILES =		main.cpp
+FILES =		main.cpp \
+			Window.cpp \
+			ShaderProgram.cpp \
+			VertexArrayBuffer.cpp \
+			VertexAttrib.cpp \
+			Texture.cpp
 
 SRCS = 		$(foreach FILE, $(FILES), $(shell find $(SRCDIR) -name $(FILE)))
 OBJS = 		$(patsubst $(SRCDIR)/%, $(OBJDIR)/%, $(SRCS:.cpp=.o))
