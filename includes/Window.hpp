@@ -14,6 +14,7 @@ public:
 	bool	should_close() const;
 	void	swap_buffers();
 	void	poll_events() const;
+	void	set_key_callback(GLFWkeyfun callback) const;
 };
 
 Window::Window(int width, int height, const std::string& title) {
@@ -35,3 +36,5 @@ bool	Window::should_close() const { return glfwWindowShouldClose(win); }
 void	Window::swap_buffers() { glfwSwapBuffers(win); }
 
 void	Window::poll_events() const { glfwPollEvents(); }
+
+void	Window::set_key_callback(GLFWkeyfun callback) const { glfwSetKeyCallback(win, callback); }

@@ -1,10 +1,10 @@
 test -f "libglfw3.a" || {
-	git clone https://github.com/glfw/glfw.git glfw-repo;
-	cmake -S glfw-repo -B glfw;
+	git clone https://github.com/glfw/glfw.git glfw-src;
+	cmake -S glfw-src -B glfw;
 	make -C glfw;
-	mv -f glfw-repo/include/GLFW includes/GLFW;
 	mv glfw/src/libglfw3.a libglfw3.a;
-	rm -dir -f glfw-repo glfw
+	mv -f glfw-src/include/GLFW includes/GLFW;
+	rm -dir -f glfw-src glfw
 }
 
 test -f "libGLEW.a" || {
