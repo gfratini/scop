@@ -9,7 +9,7 @@ void	callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 
 int main()
 {
-	int					exit_status = 0;
+	int	exit_status = 0;
 	try {
 		if (!glfwInit())
 			throw std::runtime_error("Could not initialize glfw");

@@ -5,6 +5,7 @@
 #include "ShaderProgram.hpp"
 #include <fstream>
 #include <iostream>
+#include <sstream>
 
 ShaderProgram::ShaderProgram(const std::string &vs_file, const std::string &fs_file) {
 	unsigned int vertex_shader;
@@ -28,11 +29,14 @@ ShaderProgram::~ShaderProgram() {
 
 unsigned int ShaderProgram::create_shader(const std::string &file, GLenum type) {
 	std::ifstream f(file);
+	std::stringstream sstream;
+	std::string source;
+
 	if (!f.is_open())
 		throw std::runtime_error("Shader file " + file + " not found");
-	std::string source((std::istream_iterator<char>(f)),
-	        			std::istream_iterator<char>());
 
+	sstream << f.rdbuf();
+	source = sstream.str();
 	const char* source_ptr = source.c_str();
 	unsigned int shader_id = glCreateShader(type);
 
