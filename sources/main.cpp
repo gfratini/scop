@@ -1,3 +1,4 @@
+#include "IndexBuffer.hpp"
 #include "main.hpp"
 
 void	callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -30,7 +31,13 @@ int main()
 			-0.5,  0.5, 0.0,   1.0, 1.0, 0.0,   0.0, 1.0    // top left
 		};
 
-		(void) vertices;
+		unsigned int indices[] = {
+			0, 1, 3,
+			1, 2, 3
+		};
+
+		VertexBuffer	vbo(vertices, 4, GL_STATIC_DRAW);
+		IndexBuffer		ibo(indices, 6, GL_STATIC_DRAW);
 		while (!win.should_close()) {
 			glClear(GL_COLOR_BUFFER_BIT);
 

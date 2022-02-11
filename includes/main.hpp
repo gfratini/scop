@@ -15,6 +15,7 @@
 #include "Window.hpp"
 #include "ShaderProgram.hpp"
 #include "VertexArrayBuffer.hpp"
+#include "VertexBuffer.hpp"
 #include "Texture.hpp"
 
 #endif //SCOP_CPP_MAIN_HPP

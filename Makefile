@@ -20,7 +20,8 @@ FILES =		main.cpp \
 			Window.cpp \
 			ShaderProgram.cpp \
 			VertexArrayBuffer.cpp \
-			VertexAttrib.cpp \
+			VertexBuffer.cpp \
+			IndexBuffer.cpp \
 			Texture.cpp
 
 SRCS = 		$(foreach FILE, $(FILES), $(shell find $(SRCDIR) -name $(FILE)))
