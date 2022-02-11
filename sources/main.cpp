@@ -1,4 +1,3 @@
-#include "IndexBuffer.hpp"
 #include "main.hpp"
 
 void	callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -40,29 +39,30 @@ int main()
 		glUniform1i(glGetUniformLocation(shader.id(), "texture1"), 0);
 		glUniform1i(glGetUniformLocation(shader.id(), "texture2"), 1);
 
+		int transform = glGetUniformLocation(shader.id(), "transform");
+
 		VertexArrayBuffer	array_buffer;
 		VertexBuffer	vbo(vertices, 4, GL_STATIC_DRAW);
+		Vertex::set_attrib_pointer();
 		IndexBuffer		ibo(indices, 6, GL_STATIC_DRAW);
+		mat::Vec4		trans;
 
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), NULL);
-		glEnableVertexAttribArray(0);
-		// color
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
-		glEnableVertexAttribArray(1);
-		// tex_coord
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tex_coords));
-		glEnableVertexAttribArray(2);
+		unsigned int i = 0;
+		float translate[] = {1.0001, 1.001, 11, 1.0};
 		while (!win.should_close()) {
 			glClear(GL_COLOR_BUFFER_BIT);
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
 
 			if (glGetError()) exit(1);
 
+			trans.scale(translate);
+			glUniformMatrix4fv(transform, 1, GL_TRUE, mat::mat_scale(trans));
 			texture1.bind();
 			texture2.bind();
 
 			win.swap_buffers();
 			Window::poll_events();
+			i++;
 		}
 	} catch (const std::exception& e) {
 		std::cout << e.what() << std::endl;

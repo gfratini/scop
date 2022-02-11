@@ -16,6 +16,8 @@
 #include "ShaderProgram.hpp"
 #include "VertexArrayBuffer.hpp"
 #include "VertexBuffer.hpp"
+#include "IndexBuffer.hpp"
 #include "Texture.hpp"
+#include "transform.hpp"
 
 #endif //SCOP_CPP_MAIN_HPP
