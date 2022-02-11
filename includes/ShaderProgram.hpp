@@ -16,6 +16,7 @@ private:
 public:
 	ShaderProgram(const std::string& vs_file, const std::string& fs_file);
 	~ShaderProgram();
+	unsigned int id() const;
 
 	void	use() const;
 };

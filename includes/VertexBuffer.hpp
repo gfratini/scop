@@ -13,24 +13,24 @@ struct Vertex {
 	float color[3];
 	float tex_coords[2];
 
-	static unsigned int index;
-	static void set_attrib_pointer() {
-		// position
-		glVertexAttribPointer(index++, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), NULL);
-		// color
-		glVertexAttribPointer(index++, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
-		// tex_coord
-		glVertexAttribPointer(index++, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tex_coords));
-	}
+//	static unsigned int index;
+//	static void set_attrib_pointer() {
+//		// position
+//		glVertexAttribPointer(index++, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), NULL);
+//		// color
+//		glVertexAttribPointer(index++, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
+//		// tex_coord
+//		glVertexAttribPointer(index++, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tex_coords));
+//	}
 
 };
 
 
 class VertexBuffer {
 private:
-	unsigned int	buffer_id;
-	Vertex*			v;
-	unsigned int 	num;
+	unsigned int	_buffer_id;
+	Vertex*			_v;
+	unsigned int 	_num;
 public:
 	VertexBuffer();
 	~VertexBuffer();

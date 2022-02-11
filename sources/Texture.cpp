@@ -2,24 +2,55 @@
 // Created by Giulio Fratini on 2/10/22.
 //
 
+#include <iostream>
 #include "Texture.hpp"
 #define STB_IMAGE_IMPLEMENTATION
 #include "STB/stb_image.h"
+#include "GL/glew.h"
 
-Texture::Texture(const std::string& file, GLenum usage, GLenum format)
-	: texture_id(0),
-	  usage(usage)
+
+#define _DEBUG
+#ifndef CHECK_ERR
+#define CHECK_ERR
+void CheckOpenGLError(const char* stmt, const char* fname, int line)
 {
+	GLenum err = glGetError();
+	if (err != GL_NO_ERROR)
+	{
+		printf("OpenGL error %08x, at %s:%i - for %s\n", err, fname, line, stmt);
+		abort();
+	}
+}
+#endif
+#ifdef _DEBUG
+#define GL_CHECK(stmt) do { \
+            stmt; \
+            CheckOpenGLError(#stmt, __FILE__, __LINE__); \
+        } while (0)
+#else
+#define GL_CHECK(stmt) stmt
+#endif
+
+Texture::Texture(const std::string& file, GLenum unit)
+	: texture_id(0),
+	  _pos(unit)
+{
+	stbi_set_flip_vertically_on_load(true);
 	int width, height, nrChannels;
 	unsigned char *data = stbi_load(file.c_str(), &width, &height, &nrChannels, 0);
 
 	if (!data)
 		throw std::runtime_error("Texture " + file + " not found");
 	glGenTextures(1, &texture_id);
-	glBindTexture(usage, texture_id);
+	glActiveTexture(_pos);
 	glBindTexture(GL_TEXTURE_2D, texture_id);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 	glGenerateMipmap(GL_TEXTURE_2D);
+	stbi_image_free(data);
 }
 
 Texture::~Texture() {
@@ -27,6 +58,6 @@ Texture::~Texture() {
 }
 
 void	Texture::bind() {
-	glActiveTexture(texture_id);
-	glBindTexture(usage, texture_id);
+	glActiveTexture(_pos);
+	glBindTexture(GL_TEXTURE_2D, texture_id);
 }

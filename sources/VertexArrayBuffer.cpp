@@ -7,7 +7,6 @@
 VertexArrayBuffer::VertexArrayBuffer()
  : buffer_id(0)
 {
-
 	glGenVertexArrays(1, &buffer_id);
 	glBindVertexArray(buffer_id);
 }

@@ -10,10 +10,10 @@
 class Texture {
 private:
 	unsigned int texture_id;
-	GLenum usage;
+	GLenum _pos;
 
 public:
-	Texture(const std::string& file, GLenum usage, GLenum format);
+	Texture(const std::string& file, GLenum unit);
 	~Texture();
 
 	void	bind();

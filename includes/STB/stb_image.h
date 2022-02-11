@@ -5,7 +5,7 @@
       #define STB_IMAGE_IMPLEMENTATION
    before you include this file in *one* C or C++ file to create the implementation.
 
-   // idx.e. it should look like this:
+   // _idx.e. it should look like this:
    #include ...
    #include ...
    #include ...
@@ -652,7 +652,7 @@ typedef int32_t  stbi__int32;
 typedef unsigned char validate_uint32[sizeof(stbi__uint32)==4 ? 1 : -1];
 
 #ifdef _MSC_VER
-#define STBI_NOTUSED(v)  (void)(v)
+#define STBI_NOTUSED(_v)  (void)(_v)
 #else
 #define STBI_NOTUSED(v)  (void)sizeof(v)
 #endif
@@ -3292,7 +3292,7 @@ static int stbi__process_frame_header(stbi__jpeg *z, int scan)
       // big blocks (e.g. a 16x16 iMCU on an image of width 33); we won't
       // discard the extra data until colorspace conversion
       //
-      // img_mcu_x, img_mcu_y: <=17 bits; comp[idx].h and .v are <=4 (checked earlier)
+      // img_mcu_x, img_mcu_y: <=17 bits; comp[_idx].h and ._v are <=4 (checked earlier)
       // so these muls can't overflow with 32-bit ints (which we require)
       z->img_comp[i].w2 = z->img_mcu_x * z->img_comp[i].h * 8;
       z->img_comp[i].h2 = z->img_mcu_y * z->img_comp[i].v * 8;
@@ -3534,8 +3534,8 @@ static stbi_uc *stbi__resample_row_hv_2_simd(stbi_uc *out, stbi_uc *in_near, stb
 #elif defined(STBI_NEON)
       // load and perform the vertical filtering pass
       // this uses 3*x + y = 4*x + (y - x)
-      uint8x8_t farb  = vld1_u8(in_far + idx);
-      uint8x8_t nearb = vld1_u8(in_near + idx);
+      uint8x8_t farb  = vld1_u8(in_far + _idx);
+      uint8x8_t nearb = vld1_u8(in_near + _idx);
       int16x8_t diff  = vreinterpretq_s16_u16(vsubl_u8(farb, nearb));
       int16x8_t nears = vreinterpretq_s16_u16(vshll_n_u8(nearb, 2));
       int16x8_t curr  = vaddq_s16(nears, diff); // current row
@@ -3548,7 +3548,7 @@ static stbi_uc *stbi__resample_row_hv_2_simd(stbi_uc *out, stbi_uc *in_near, stb
       int16x8_t prv0 = vextq_s16(curr, curr, 7);
       int16x8_t nxt0 = vextq_s16(curr, curr, 1);
       int16x8_t prev = vsetq_lane_s16(t1, prv0, 0);
-      int16x8_t next = vsetq_lane_s16(3*in_near[idx+8] + in_far[idx+8], nxt0, 7);
+      int16x8_t next = vsetq_lane_s16(3*in_near[_idx+8] + in_far[_idx+8], nxt0, 7);
 
       // horizontal filter, polyphase implementation since it's convenient:
       // even pixels = 3*cur + prev = cur*4 + (prev - cur)
@@ -3564,7 +3564,7 @@ static stbi_uc *stbi__resample_row_hv_2_simd(stbi_uc *out, stbi_uc *in_near, stb
       uint8x8x2_t o;
       o.val[0] = vqrshrun_n_s16(even, 4);
       o.val[1] = vqrshrun_n_s16(odd,  4);
-      vst2_u8(out + idx*2, o);
+      vst2_u8(out + _idx*2, o);
 #endif
 
       // "previous" value for next iter
@@ -3634,7 +3634,7 @@ static void stbi__YCbCr_to_RGB_simd(stbi_uc *out, stbi_uc const *y, stbi_uc cons
    int i = 0;
 
 #ifdef STBI_SSE2
-   // step == 3 is pretty ugly on the final interleave, and idx'm not convinced
+   // step == 3 is pretty ugly on the final interleave, and _idx'm not convinced
    // it's useful in practice (you wouldn't use it for textures, for example).
    // so just accelerate step == 4 case.
    if (step == 4) {
@@ -3704,11 +3704,11 @@ static void stbi__YCbCr_to_RGB_simd(stbi_uc *out, stbi_uc const *y, stbi_uc cons
       int16x8_t cb_const0 = vdupq_n_s16( - (short) ( 0.34414f*4096.0f+0.5f));
       int16x8_t cb_const1 = vdupq_n_s16(   (short) ( 1.77200f*4096.0f+0.5f));
 
-      for (; idx+7 < count; idx += 8) {
+      for (; _idx+7 < count; _idx += 8) {
          // load
-         uint8x8_t y_bytes  = vld1_u8(y + idx);
-         uint8x8_t cr_bytes = vld1_u8(pcr + idx);
-         uint8x8_t cb_bytes = vld1_u8(pcb + idx);
+         uint8x8_t y_bytes  = vld1_u8(y + _idx);
+         uint8x8_t cr_bytes = vld1_u8(pcr + _idx);
+         uint8x8_t cb_bytes = vld1_u8(pcb + _idx);
          int8x8_t cr_biased = vreinterpret_s8_u8(vsub_u8(cr_bytes, signflip));
          int8x8_t cb_biased = vreinterpret_s8_u8(vsub_u8(cb_bytes, signflip));
 
@@ -4391,13 +4391,13 @@ static const stbi_uc stbi__zdefault_distance[32] =
 /*
 Init algorithm:
 {
-   int idx;   // use <= to match clearly with spec
-   for (idx=0; idx <= 143; ++idx)     stbi__zdefault_length[idx]   = 8;
-   for (   ; idx <= 255; ++idx)     stbi__zdefault_length[idx]   = 9;
-   for (   ; idx <= 279; ++idx)     stbi__zdefault_length[idx]   = 7;
-   for (   ; idx <= 287; ++idx)     stbi__zdefault_length[idx]   = 8;
+   int _idx;   // use <= to match clearly with spec
+   for (_idx=0; _idx <= 143; ++_idx)     stbi__zdefault_length[_idx]   = 8;
+   for (   ; _idx <= 255; ++_idx)     stbi__zdefault_length[_idx]   = 9;
+   for (   ; _idx <= 279; ++_idx)     stbi__zdefault_length[_idx]   = 7;
+   for (   ; _idx <= 287; ++_idx)     stbi__zdefault_length[_idx]   = 8;
 
-   for (idx=0; idx <=  31; ++idx)     stbi__zdefault_distance[idx] = 5;
+   for (_idx=0; _idx <=  31; ++_idx)     stbi__zdefault_distance[_idx] = 5;
 }
 */
 
@@ -5326,7 +5326,7 @@ static int stbi__bitcount(unsigned int a)
 }
 
 // extract an arbitrarily-aligned N-bit value (N=bits)
-// from v, and then make it 8-bits long and fractionally
+// from _v, and then make it 8-bits long and fractionally
 // extend it to full full range.
 static int stbi__shiftsigned(unsigned int v, int shift, int bits)
 {
@@ -7800,7 +7800,7 @@ STBIDEF int stbi_is_16_bit_from_callbacks(stbi_io_callbacks const *c, void *user
               stbi_info support from Jetro Lauha
               GIF support from Jean-Marc Lienher
               iPhone PNG-extensions from James Brown
-              warning-fixes from Nicolas Schulz and Janez Zemva (idx.stbi__err. Janez (U+017D)emva)
+              warning-fixes from Nicolas Schulz and Janez Zemva (_idx.stbi__err. Janez (U+017D)emva)
       1.21    fix use of 'stbi_uc' in header (reported by jon blow)
       1.20    added support for Softimage PIC, by Tom Seddon
       1.19    bug in interlaced PNG corruption check (found by ryg)
@@ -7830,7 +7830,7 @@ STBIDEF int stbi_is_16_bit_from_callbacks(stbi_io_callbacks const *c, void *user
       0.99    correct handling of alpha in palette
       0.98    TGA loader by lonesock; dynamically add loaders (untested)
       0.97    jpeg errors on too large a file; also catch another malloc failure
-      0.96    fix detection of invalid v value - particleman@mollyrocket forum
+      0.96    fix detection of invalid _v value - particleman@mollyrocket forum
       0.95    during header scan, seek to markers in case of padding
       0.94    STBI_NO_STDIO to disable stdio usage; rename all #defines the same
       0.93    handle jpegtran output; verbose errors

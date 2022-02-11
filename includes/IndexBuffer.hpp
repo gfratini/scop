@@ -10,17 +10,17 @@
 
 class IndexBuffer {
 private:
-	unsigned int	buffer_id;
-	unsigned int*	idx;
-	unsigned int	num;
+	unsigned int	_buffer_id;
+	unsigned int*	_idx;
+	unsigned int	_num;
 
 public:
 	IndexBuffer();
 	~IndexBuffer();
-	IndexBuffer(const int * indices, const unsigned int num, GLenum usage);
+	IndexBuffer(const unsigned int * indices, unsigned int num, GLenum usage);
 
 	void bind() const;
-	void set_indices(const int *indices, const unsigned int num, GLenum usage);
+	void set_indices(const int *indices, unsigned int num, GLenum usage);
 };
 
 

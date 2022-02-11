@@ -54,6 +54,10 @@ unsigned int ShaderProgram::create_shader(const std::string &file, GLenum type) 
 	return shader_id;
 }
 
+unsigned int ShaderProgram::id() const {
+	return program_id;
+}
+
 void ShaderProgram::use() const {
 	glUseProgram(program_id);
 }
