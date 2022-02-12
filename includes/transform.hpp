@@ -7,15 +7,6 @@
 #define SCOP_CPP_TRANSFORM_HPP
 
 /*
- *	1  2  3     1  2  3     (1*1 + 2*5 + 3*8)  (1*2 + 2*5 + 3*8)  (1*3 + 2*6 + 3*9)
- *	4  5  6  *  4  5  6  =   ...
- *	7  8  9     7  8  9
- *
- * */
-
-
-
-/*
     pub fn rotate(a: [f32; 4], angle: f32) -> Mat4 {
 		let [x,y,z,w] = a;
 		let (sin, cos) = (angle.sin(), angle.cos());
@@ -34,13 +25,25 @@
 #include <memory>
 namespace mat {
 
+    class Vec4{
+    private:
+        float* vec;
+    public:
+        Vec4(float x, float y, float z, float w) {
+            vec = new float[4];
+            vec[0] = x;
+            vec[1] = y;
+            vec[2] = z;
+            vec[3] = w;
+        }
+    };
+
 	class Mat4 {
 	private:
-		float * mat;
-		Mat4	operator*(const Mat4& m) {
+        static unsigned int mat_len = 4;
+		float* mat;
 
-		}
-
+        Mat4(float* mat): mat(mat) {}
 	public:
 
 		Mat4() {
@@ -57,6 +60,27 @@ namespace mat {
 		~Mat4() {
 			delete[] mat;
 		}
+
+		Mat4	operator*(const Mat4& m) {
+            float* C = new float[mat_len*mat_len];
+            int col = 0;
+            for (int k = 0; k < mat_len; k++) {
+                col = 0;
+                for (int j = 0; j < mat_len; j++) {
+                    C[j + (mat_len * k)] = 0;
+                    for (int i = 0; i < mat_len; i++) {
+                        C[j + (mat_len * k)] += A[i + (mat_len * k)] * B[(i * mat_len) + col];
+                    };
+                    col++;
+                }
+            }
+            return (Mat4(C));
+		}
+
+        Mat4&    operator=(const Mat4& m) {
+            memmove(mat, m.mat, 16);
+            return *this;
+        }
 
 	};
 
