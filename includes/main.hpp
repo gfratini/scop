@@ -5,6 +5,9 @@
 #ifndef SCOP_CPP_MAIN_HPP
 #define SCOP_CPP_MAIN_HPP
 
+#define MIN_UPDATE_TIME 0.002
+
+
 #include <stdexcept>
 #include <exception>
 #include <iostream>

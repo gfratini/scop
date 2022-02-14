@@ -20,7 +20,8 @@ Window::Window(int width, int height, const std::string& title) {
 	}
 
 	glfwMakeContextCurrent(win);
-	glfwSwapInterval(1);
+//	glfwSetInputMode(win, GLFW_STICKY_KEYS, GLFW_TRUE);
+	glfwSwapInterval(0);
 }
 
 Window::~Window() {

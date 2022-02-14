@@ -18,7 +18,7 @@ public:
 
 	bool	should_close() const;
 	void	swap_buffers();
-	static void	poll_events() ;
+	static void	poll_events();
 	void set_key_callback(void (*callback)(GLFWwindow *, int, int, int, int)) const;
 
 };

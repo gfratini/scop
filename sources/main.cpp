@@ -1,35 +1,77 @@
 #include "main.hpp"
 
-static mat::Mat4*		t = new mat::Mat4();
+mat::Mat4	t;
+
+int		m_left = 0;
+int		m_up = 0;
+int		r_left = 0;
+
+int		m_right = 0;
+int		m_down = 0;
+int		r_right = 0;
+
+int s_up = 0;
+int s_down = 0;
+
+double		last_update = 0;
 
 void	callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 (void) scancode;
 (void) mods;
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, 1);
-	if (key == GLFW_KEY_Q) {
-		float f[] = {0.0, 0.0, 1.0, 0.0};
-		(*t).rotate(f, 1.0);
-	}
-	else if (key == GLFW_KEY_E) {
-		float f[] = {0.0, 0.0, 1.0, 0.0};
-		(*t).rotate(f, -1.0);
-	}
-	if (key == GLFW_KEY_W) {
-		float f[] = {0.01, 0.0, 0.0, 0.0};
-		(*t).translate(f);
-	}
-	else if (key == GLFW_KEY_S) {
-		float f[] = {-0.01, 0.0, 0.0, 0.0};
-		(*t).translate(f);
-	}
-	if (key == GLFW_KEY_A) {
-		float f[] = {0.0, 0.01, 0.0, 0.0};
-		(*t).translate(f);
-	}
-	else if (key == GLFW_KEY_D) {
-		float f[] = {0.0, -0.01, 0.0, 0.0};
-		(*t).translate(f);
+	if (key == 'Q' && action != GLFW_RELEASE) r_left = 1;
+	else if (key == 'E' && action != GLFW_RELEASE) r_right = 1;
+	else if (key == 'Q') r_left = 0;
+	else if (key == 'E') r_right = 0;
+	else if (key == 'W' && action != GLFW_RELEASE) m_up = 1;
+	else if (key == 'S' && action != GLFW_RELEASE) m_down = 1;
+	else if (key == 'W') m_up = 0;
+	else if (key == 'S') m_down = 0;
+	else if (key == 'A' && action != GLFW_RELEASE) m_left = 1;
+	else if (key == 'D' && action != GLFW_RELEASE) m_right = 1;
+	else if (key == 'A') m_left = 0;
+	else if (key == 'D') m_right = 0;
+	else if (key == 'R' && action != GLFW_RELEASE) s_up = 1;
+	else if (key == 'F' && action != GLFW_RELEASE) s_down = 1;
+	else if (key == 'R') s_up = 0;
+	else if (key == 'F') s_down = 0;
+}
+
+void move() {
+	double new_time = glfwGetTime();
+
+	if (new_time - last_update >= MIN_UPDATE_TIME) {
+		last_update = new_time;
+		if (m_left && !m_right) {
+			float f[] = {-0.01, 0.0, 0.0, 1.0};
+			t.translate(f);
+		} else if (m_right && !m_left) {
+			float f[] = {0.01, 0.0, 0.0, 1.0};
+			t.translate(f);
+		}
+		if (m_up && !m_down) {
+			float f[] = {0.0, 0.01, 0.0, 1.0};
+			t.translate(f);
+		} else if (m_down && !m_up) {
+			float f[] = {0.0, -0.01, 0.0, 1.0};
+			t.translate(f);
+		}
+		if (r_left && !r_right) {
+			float f[] = {0.0, 1.0, 0.0, 1.0};
+			t.rotate(f, 0.01);
+		} else if (r_right && !r_left) {
+			float f[] = {0.0, 1.0, 0.0, 1.0};
+			t.rotate(f, -0.01);
+		}
+		if (s_up && !s_down) {
+			float f[] = {1.01, 1.01, 1.01, 1.0};
+			t.scale(f);
+		}
+		if (s_down && !s_up) {
+			float f[] = {0.99, 0.99, 0.99, 1.0};
+			t.scale(f);
+		}
 	}
 }
 
@@ -79,9 +121,11 @@ int main()
 
 			if (glGetError()) exit(1);
 
-			glUniformMatrix4fv(transform, 1, GL_TRUE, (*t).ptr());
+			glUniformMatrix4fv(transform, 1, GL_TRUE, t.ptr());
 			texture1.bind();
 			texture2.bind();
+
+			move();
 
 			win.swap_buffers();
 			Window::poll_events();
