@@ -19,8 +19,8 @@ Window::Window(int width, int height, const std::string& title) {
 		throw std::runtime_error("Error: Could not create a Window");
 	}
 
-	glfwSwapInterval(1);
 	glfwMakeContextCurrent(win);
+	glfwSwapInterval(1);
 }
 
 Window::~Window() {

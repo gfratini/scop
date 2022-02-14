@@ -1,10 +1,36 @@
 #include "main.hpp"
 
+static mat::Mat4*		t = new mat::Mat4();
+
 void	callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 (void) scancode;
 (void) mods;
-    if ((key == GLFW_KEY_ESCAPE || key == GLFW_KEY_Q) && action == GLFW_PRESS)
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, 1);
+	if (key == GLFW_KEY_Q) {
+		float f[] = {0.0, 0.0, 1.0, 0.0};
+		(*t).rotate(f, 1.0);
+	}
+	else if (key == GLFW_KEY_E) {
+		float f[] = {0.0, 0.0, 1.0, 0.0};
+		(*t).rotate(f, -1.0);
+	}
+	if (key == GLFW_KEY_W) {
+		float f[] = {0.01, 0.0, 0.0, 0.0};
+		(*t).translate(f);
+	}
+	else if (key == GLFW_KEY_S) {
+		float f[] = {-0.01, 0.0, 0.0, 0.0};
+		(*t).translate(f);
+	}
+	if (key == GLFW_KEY_A) {
+		float f[] = {0.0, 0.01, 0.0, 0.0};
+		(*t).translate(f);
+	}
+	else if (key == GLFW_KEY_D) {
+		float f[] = {0.0, -0.01, 0.0, 0.0};
+		(*t).translate(f);
+	}
 }
 
 int main()
@@ -45,18 +71,15 @@ int main()
 		VertexBuffer	vbo(vertices, 4, GL_STATIC_DRAW);
 		Vertex::set_attrib_pointer();
 		IndexBuffer		ibo(indices, 6, GL_STATIC_DRAW);
-		mat::Vec4		trans;
 
 		unsigned int i = 0;
-		float translate[] = {1.0001, 1.001, 11, 1.0};
 		while (!win.should_close()) {
 			glClear(GL_COLOR_BUFFER_BIT);
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
 
 			if (glGetError()) exit(1);
 
-			trans.scale(translate);
-			glUniformMatrix4fv(transform, 1, GL_TRUE, mat::mat_scale(trans));
+			glUniformMatrix4fv(transform, 1, GL_TRUE, (*t).ptr());
 			texture1.bind();
 			texture2.bind();
 
