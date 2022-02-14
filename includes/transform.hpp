@@ -6,25 +6,11 @@
 #ifndef SCOP_CPP_TRANSFORM_HPP
 #define SCOP_CPP_TRANSFORM_HPP
 
-/*
-    pub fn rotate(a: [f32; 4], angle: f32) -> Mat4 {
-		let [x,y,z,w] = a;
-		let (sin, cos) = (angle.sin(), angle.cos());
-		let data = [
-			cos + x * x * (1.0 - cos),		x * y * (1.0 - cos) - z * sin,	x * z * (1.0 - cos) + y * sin,	0.0,
-			y * x * (1.0 - cos) + z * sin,	cos + y * y * (1.0 - cos),		y * z * (1.0 - cos) - x * sin,	0.0,
-			z * x * (1.0 - cos) - y * sin,	z * y * (1.0 - cos) + x * sin,	cos + z * z * (1.0 - cos),		0.0,
-			0.0,							0.0,							0.0,							1.0
-		];
-
-        Mat4 {
-			data
-		}
-    }
- * */
 #include <memory>
 #include <cmath>
 namespace mat {
+
+	float rad(float deg) { return deg * (float)(3.141592/180.0); }
 
     class Vec4{
     private:

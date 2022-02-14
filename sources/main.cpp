@@ -18,24 +18,20 @@ double		last_update = 0;
 void	callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 (void) scancode;
 (void) mods;
+
+	int val = action;
+
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, 1);
-	if (key == 'Q' && action != GLFW_RELEASE) r_left = 1;
-	else if (key == 'E' && action != GLFW_RELEASE) r_right = 1;
-	else if (key == 'Q') r_left = 0;
-	else if (key == 'E') r_right = 0;
-	else if (key == 'W' && action != GLFW_RELEASE) m_up = 1;
-	else if (key == 'S' && action != GLFW_RELEASE) m_down = 1;
-	else if (key == 'W') m_up = 0;
-	else if (key == 'S') m_down = 0;
-	else if (key == 'A' && action != GLFW_RELEASE) m_left = 1;
-	else if (key == 'D' && action != GLFW_RELEASE) m_right = 1;
-	else if (key == 'A') m_left = 0;
-	else if (key == 'D') m_right = 0;
-	else if (key == 'R' && action != GLFW_RELEASE) s_up = 1;
-	else if (key == 'F' && action != GLFW_RELEASE) s_down = 1;
-	else if (key == 'R') s_up = 0;
-	else if (key == 'F') s_down = 0;
+
+	if (key == 'Q') r_left = val;
+	else if (key == 'E') r_right = val;
+	else if (key == 'W') m_up = val;
+	else if (key == 'S') m_down = val;
+	else if (key == 'A') m_left = val;
+	else if (key == 'D') m_right = val;
+	else if (key == 'R') s_up = val;
+	else if (key == 'F') s_down = val;
 }
 
 void move() {
@@ -58,11 +54,11 @@ void move() {
 			t.translate(f);
 		}
 		if (r_left && !r_right) {
-			float f[] = {0.0, 1.0, 0.0, 1.0};
-			t.rotate(f, 0.01);
+			float f[] = {0.0, 0.0, 1.0, 1.0};
+			t.rotate(f, mat::rad(1));
 		} else if (r_right && !r_left) {
-			float f[] = {0.0, 1.0, 0.0, 1.0};
-			t.rotate(f, -0.01);
+			float f[] = {0.0, 0.0, 1.0, 1.0};
+			t.rotate(f, mat::rad(-1));
 		}
 		if (s_up && !s_down) {
 			float f[] = {1.01, 1.01, 1.01, 1.0};
