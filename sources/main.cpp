@@ -15,6 +15,48 @@ int s_down = 0;
 
 double		last_update = 0;
 
+mat::Vec4	camera_front;
+mat::Vec4	camera;
+mat::Vec4	up(0.0, 1.0, 0.0, 1.0);
+
+double	last_x = 0;
+double	last_y = 0;
+float	yaw = 0;
+float	pitch = 0;
+bool	first_mouse = true;
+void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+{
+	if (first_mouse)
+	{
+		last_x = xpos;
+		last_y = ypos;
+		first_mouse = false;
+	}
+
+	float xoffset = (float)(xpos - last_x);
+	float yoffset = (float)(last_y - ypos);
+	last_x = xpos;
+	last_y = ypos;
+
+	float sensitivity = 0.1f;
+	xoffset *= sensitivity;
+	yoffset *= sensitivity;
+
+	yaw   += xoffset;
+	pitch += yoffset;
+
+	if(pitch > 89.0f)
+		pitch = 89.0f;
+	if(pitch < -89.0f)
+		pitch = -89.0f;
+
+	mat::Vec4 direction;
+	direction.x() = cos(mat::rad(yaw)) * cos(mat::rad(pitch));
+	direction.y() = sin(mat::rad(pitch));
+	direction.z() = sin(mat::rad(yaw)) * cos(mat::rad(pitch));
+	camera_front = mat::normalize(direction);
+}
+
 void	callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 (void) scancode;
 (void) mods;
@@ -37,27 +79,28 @@ void	callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 void move() {
 	double new_time = glfwGetTime();
 
+	float speed = 0.05;
 	if (new_time - last_update >= MIN_UPDATE_TIME) {
 		last_update = new_time;
 		if (m_left && !m_right) {
-			float f[] = {0.01, 0.0, 0.0, 1.0};
-			t.translate(f);
+			mat::Vec4 v = mat::normalize(mat::cross(camera_front, up));
+			camera += v;
 		} else if (m_right && !m_left) {
-			float f[] = {-0.01, 0.0, 0.0, 1.0};
-			t.translate(f);
+			mat::Vec4 v = camera_front * speed;
+			camera -= v;
 		}
 		if (m_up && !m_down) {
-			float f[] = {0.0, 0.0, -0.01, 1.0};
-			t.translate(f);
+			mat::Vec4 v = camera_front * speed;
+			camera += v;
 		} else if (m_down && !m_up) {
-			float f[] = {0.0, 0.0, 0.01, 1.0};
-			t.translate(f);
+			mat::Vec4 v = camera_front * speed;
+			camera -= v;
 		}
 		if (r_left && !r_right) {
-			float f[] = {0.0, 0.0, 1.0, 1.0};
+			float f[] = {0.0, 1.0, 0.0, 1.0};
 			t.rotate(f, mat::rad(1));
 		} else if (r_right && !r_left) {
-			float f[] = {0.0, 0.0, 1.0, 1.0};
+			float f[] = {0.0, 1.0, 0.0, 1.0};
 			t.rotate(f, mat::rad(-1));
 		}
 		if (s_up && !s_down) {
@@ -71,30 +114,6 @@ void move() {
 	}
 }
 
-
-#define _DEBUG
-#ifndef CHECK_ERR
-#define CHECK_ERR
-void CheckOpenGLError(const char* stmt, const char* fname, int line)
-{
-	GLenum err = glGetError();
-	if (err != GL_NO_ERROR)
-	{
-		printf("OpenGL error %08x, at %s:%i - for %s\n", err, fname, line, stmt);
-		abort();
-	}
-}
-#endif
-#ifdef _DEBUG
-#define GL_CHECK(stmt) do { \
-            stmt; \
-            CheckOpenGLError(#stmt, __FILE__, __LINE__); \
-        } while (0)
-#else
-#define GL_CHECK(stmt) stmt
-#endif
-
-
 int main()
 {
 	int	exit_status = 0;
@@ -104,6 +123,7 @@ int main()
 
 		Window win(800, 600, "Scop");
 		win.set_key_callback(callback);
+		win.set_mouse_callback(mouse_callback);
 		if (glewInit() != GLEW_OK)
 			throw std::runtime_error("Could not initialize GLEW");
 
@@ -174,15 +194,12 @@ int main()
 //		IndexBuffer		ibo(indices, 6, GL_STATIC_DRAW);
 
 		mat::Mat4 		perspective = mat::perspective(800, 600, 0.0, 100, 60);
-//		mat::Mat4		perspective;
 		mat::Mat4		transform;
-		mat::Mat4		view;
+//		mat::Mat4		view;
 //		transform.scale(mat::Vec4(1.2, 1.2, 1.2, 1.0));
 		transform.rotate(mat::Vec4(1.0, 0.0, 0.0, 1.0), mat::rad(55.0));
 		transform.rotate(mat::Vec4(0.0, 1.0, 0.0, 1.0), mat::rad(30.0));
 		t.translate(mat::Vec4(0.0, 0.0, 5, 1.0));
-
-		std::cout << perspective * view << std::endl;
 
 		unsigned int i = 0;
 		while (!win.should_close()) {

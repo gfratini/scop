@@ -11,9 +11,28 @@
 namespace mat {
 	float rad(float deg) { return deg * (float)(3.141592/180.0); }
 
+	template <class T>
+	T	normalize(T vec) {
+		T new_vec;
+		float len = sqrtf((vec.x() * vec.x()) + (vec.y() * vec.y()) + (vec.z() * vec.z()));
+		new_vec.x() = vec.x() / len;
+		new_vec.y() = vec.y() / len;
+		new_vec.z() = vec.z() / len;
+		return new_vec;
+	}
+
+	template <class T>
+	T	cross(T vec1, T vec2) {
+		T new_vec;
+
+		new_vec.x() = vec1.y() * vec2.z() - vec1.z() * vec2.y();
+		new_vec.y() = vec1.z() * vec2.x() - vec1.x() * vec2.z();
+		new_vec.z() = vec1.x() * vec2.y() - vec1.y() * vec2.x();
+		return new_vec;
+	}
 
     class Vec4{
-    private:
+	protected:
         float* vec;
     public:
         Vec4(float x, float y, float z, float w) {
@@ -23,12 +42,53 @@ namespace mat {
             vec[2] = z;
             vec[3] = w;
         }
+		Vec4() {
+			vec = new float[4];
+			vec[0] = 0;
+			vec[1] = 0;
+			vec[2] = 0;
+			vec[3] = 0;
+		}
 
 		float x() const {return vec[0]; }
 		float y() const {return vec[1]; }
 		float z() const {return vec[2]; }
 		float w() const {return vec[3]; }
+
+		float& x() {return vec[0]; }
+		float& y() {return vec[1]; }
+		float& z() {return vec[2]; }
+		float& w() {return vec[3]; }
+
+		Vec4&	operator=(const Vec4& v) {
+			memmove(vec, v.vec, 4 * sizeof(float));
+		}
+
+		Vec4	operator*(float f) {
+			return Vec4(x() * f, y() * f, z() * f, w());
+		}
+
+		Vec4	operator+(Vec4 v) {
+			return Vec4(x() + v.x(), y() + v.y(), z() + v.z(), 1.0);
+		}
+		Vec4	operator-(Vec4 v) {
+			return Vec4(x() - v.x(), y() - v.y(), z() - v.z(), 1.0);
+		}
+		Vec4	operator+=(Vec4 v) {
+			*this = *this + v;
+		}
+		Vec4	operator-=(Vec4 v) {
+			*this = *this - v;
+		}
     };
+
+	class Vec3 : public Vec4 {
+	public:
+		Vec3() : Vec4() {}
+		Vec3(float x, float y, float z) : Vec4(x, y, z, 1.0) {}
+
+
+	};
 
 	class Mat4 {
 	private:

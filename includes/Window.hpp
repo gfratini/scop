@@ -21,6 +21,7 @@ public:
 	static void	poll_events();
 	void set_key_callback(void (*callback)(GLFWwindow *, int, int, int, int)) const;
 
+	void set_mouse_callback(void (*callback)(GLFWwindow *, double, double)) const;
 };
 
 #endif //SCOP_CPP_WINDOW_HPP

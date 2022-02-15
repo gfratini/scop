@@ -20,7 +20,8 @@ Window::Window(int width, int height, const std::string& title) {
 	}
 
 	glfwMakeContextCurrent(win);
-//	glfwSetInputMode(win, GLFW_STICKY_KEYS, GLFW_TRUE);
+	glfwSetInputMode(win, GLFW_STICKY_KEYS, GLFW_TRUE);
+	glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSwapInterval(0);
 }
 
@@ -35,3 +36,5 @@ void	Window::swap_buffers() { glfwSwapBuffers(win); }
 void	Window::poll_events() { glfwPollEvents(); }
 
 void	Window::set_key_callback(void (*callback)(GLFWwindow *, int, int, int, int)) const { glfwSetKeyCallback(win, callback); }
+
+void	Window::set_mouse_callback(void (*callback)(GLFWwindow *, double, double )) const { glfwSetCursorPosCallback(win, callback); }
