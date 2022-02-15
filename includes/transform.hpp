@@ -9,8 +9,8 @@
 #include <memory>
 #include <cmath>
 namespace mat {
-
 	float rad(float deg) { return deg * (float)(3.141592/180.0); }
+
 
     class Vec4{
     private:
@@ -35,8 +35,8 @@ namespace mat {
         static const unsigned int mat_len = 4;
 		float* mat;
 
-        Mat4(float* mat): mat(mat) {}
 	public:
+        Mat4(float* mat): mat(mat) {}
 
 		Mat4() {
 			float tmp[] = {
@@ -171,6 +171,23 @@ namespace mat {
 		}
 		friend std::ostream& operator<<(std::ostream& os, const Mat4& m);
 	};
+	Mat4 perspective(float w, float h, float z_near, float  z_far, float fov) {
+		const float ar = w / h;
+		const float z_range = z_near - z_far;
+		const float tan_fov = tanf(rad(fov / 2.0));
+
+		float* f = new float[16];
+
+		float tmp[] = {
+				1.0f / (tan_fov * ar), 0.0f, 0.0f, 0.0f,
+				0.0f, 1.0f / tan_fov, 0.0f, 0.0f,
+				0.0f, 0.0f, (-z_near - z_far) / z_range, 2.0f * z_far * z_near / z_range,
+				0.0f, 0.0f, 1.0f, 1.0f
+		};
+		memmove(f, tmp, 16 * sizeof(float));
+		return Mat4(f);
+//		return Mat4();
+	}
 
 	std::ostream& operator<<(std::ostream& os, const Mat4& m) {
 		for (unsigned int i = 0; i < Mat4::mat_len; ++i) {

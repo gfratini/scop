@@ -40,17 +40,17 @@ void move() {
 	if (new_time - last_update >= MIN_UPDATE_TIME) {
 		last_update = new_time;
 		if (m_left && !m_right) {
-			float f[] = {-0.01, 0.0, 0.0, 1.0};
+			float f[] = {0.01, 0.0, 0.0, 1.0};
 			t.translate(f);
 		} else if (m_right && !m_left) {
-			float f[] = {0.01, 0.0, 0.0, 1.0};
+			float f[] = {-0.01, 0.0, 0.0, 1.0};
 			t.translate(f);
 		}
 		if (m_up && !m_down) {
-			float f[] = {0.0, 0.01, 0.0, 1.0};
+			float f[] = {0.0, 0.0, -0.01, 1.0};
 			t.translate(f);
 		} else if (m_down && !m_up) {
-			float f[] = {0.0, -0.01, 0.0, 1.0};
+			float f[] = {0.0, 0.0, 0.01, 1.0};
 			t.translate(f);
 		}
 		if (r_left && !r_right) {
@@ -71,6 +71,30 @@ void move() {
 	}
 }
 
+
+#define _DEBUG
+#ifndef CHECK_ERR
+#define CHECK_ERR
+void CheckOpenGLError(const char* stmt, const char* fname, int line)
+{
+	GLenum err = glGetError();
+	if (err != GL_NO_ERROR)
+	{
+		printf("OpenGL error %08x, at %s:%i - for %s\n", err, fname, line, stmt);
+		abort();
+	}
+}
+#endif
+#ifdef _DEBUG
+#define GL_CHECK(stmt) do { \
+            stmt; \
+            CheckOpenGLError(#stmt, __FILE__, __LINE__); \
+        } while (0)
+#else
+#define GL_CHECK(stmt) stmt
+#endif
+
+
 int main()
 {
 	int	exit_status = 0;
@@ -78,17 +102,54 @@ int main()
 		if (!glfwInit())
 			throw std::runtime_error("Could not initialize glfw");
 
-		Window win(640, 480, "Hello World");
+		Window win(800, 600, "Scop");
 		win.set_key_callback(callback);
 		if (glewInit() != GLEW_OK)
 			throw std::runtime_error("Could not initialize GLEW");
 
+		glEnable(GL_DEPTH_TEST);
 		float vertices[] = {
-			// positions          // colors           // texture coords
-			 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
-			 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
-			-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
-			-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left
+				-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+				0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+				0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+				0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+				-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+				-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+				-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+				0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+				0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+				0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+				-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+				-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+				-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+				-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+				-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+				-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+				-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+				-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+				0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+				0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+				0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+				0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+				0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+				0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+				-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+				0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+				0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+				0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+				-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+				-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+				-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+				0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+				0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+				0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+				-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+				-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 		};
 
 		unsigned int indices[] = {
@@ -103,21 +164,36 @@ int main()
 		glUniform1i(glGetUniformLocation(shader.id(), "texture1"), 0);
 		glUniform1i(glGetUniformLocation(shader.id(), "texture2"), 1);
 
-		int transform = glGetUniformLocation(shader.id(), "transform");
+		int transform_loc = glGetUniformLocation(shader.id(), "transform");
+		int perspective_loc = glGetUniformLocation(shader.id(), "perspective");
+		int view_loc = glGetUniformLocation(shader.id(), "view");
 
 		VertexArrayBuffer	array_buffer;
-		VertexBuffer	vbo(vertices, 4, GL_STATIC_DRAW);
+		VertexBuffer	vbo(vertices, 36, GL_STATIC_DRAW);
 		Vertex::set_attrib_pointer();
-		IndexBuffer		ibo(indices, 6, GL_STATIC_DRAW);
+//		IndexBuffer		ibo(indices, 6, GL_STATIC_DRAW);
+
+		mat::Mat4 		perspective = mat::perspective(800, 600, 0.0, 100, 60);
+//		mat::Mat4		perspective;
+		mat::Mat4		transform;
+		mat::Mat4		view;
+//		transform.scale(mat::Vec4(1.2, 1.2, 1.2, 1.0));
+		transform.rotate(mat::Vec4(1.0, 0.0, 0.0, 1.0), mat::rad(55.0));
+		transform.rotate(mat::Vec4(0.0, 1.0, 0.0, 1.0), mat::rad(30.0));
+		t.translate(mat::Vec4(0.0, 0.0, 5, 1.0));
+
+		std::cout << perspective * view << std::endl;
 
 		unsigned int i = 0;
 		while (!win.should_close()) {
-			glClear(GL_COLOR_BUFFER_BIT);
-			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glDrawArrays(GL_TRIANGLES, 0, 36);
 
 			if (glGetError()) exit(1);
 
-			glUniformMatrix4fv(transform, 1, GL_TRUE, t.ptr());
+			glUniformMatrix4fv(perspective_loc, 1, GL_TRUE, perspective.ptr());
+			glUniformMatrix4fv(view_loc, 1, GL_TRUE, t.ptr());
+			glUniformMatrix4fv(transform_loc, 1, GL_TRUE, transform.ptr());
 			texture1.bind();
 			texture2.bind();
 

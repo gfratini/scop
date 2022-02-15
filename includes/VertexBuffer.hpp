@@ -10,19 +10,15 @@
 struct Vertex {
 
 	float position[3];
-	float color[3];
 	float tex_coords[2];
 
 	static void set_attrib_pointer() {
 		//position
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), NULL);
 		glEnableVertexAttribArray(0);
-		// color
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
-		glEnableVertexAttribArray(1);
 		// tex_coord
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tex_coords));
-		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tex_coords));
+		glEnableVertexAttribArray(1);
 	}
 
 };
