@@ -22,7 +22,8 @@ FILES =		main.cpp \
 			VertexArrayBuffer.cpp \
 			VertexBuffer.cpp \
 			IndexBuffer.cpp \
-			Texture.cpp
+			Texture.cpp \
+			Camera.cpp
 
 SRCS = 		$(foreach FILE, $(FILES), $(shell find $(SRCDIR) -name $(FILE)))
 OBJS = 		$(patsubst $(SRCDIR)/%, $(OBJDIR)/%, $(SRCS:.cpp=.o))

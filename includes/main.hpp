@@ -22,5 +22,6 @@
 #include "IndexBuffer.hpp"
 #include "Texture.hpp"
 #include "transform.hpp"
+#include "Camera.hpp"
 
 #endif //SCOP_CPP_MAIN_HPP

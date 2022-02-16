@@ -1,11 +1,6 @@
 #include "main.hpp"
 
-mat::Vec3	camera_pos(0.0, 0.0, 10.0);
-mat::Vec3	camera_target;
-mat::Vec3	up(0.0,1.0,0.0);
-mat::Vec3	camera_front;
-
-mat::Mat4	view(mat::look_at(camera_pos, camera_target, up));
+Camera	camera({0.0, -0.5, 3});
 
 int		m_left = 0;
 int		m_up = 0;
@@ -14,43 +9,10 @@ int		m_down = 0;
 
 double		last_update = 0;
 
-double	last_x = 800 / 2.0;
-double	last_y = 600 / 2.0;
-float	yaw = -90.0f;
-float	pitch = 0;
-bool	first_mouse = true;
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
 (void) window;
-	if (first_mouse)
-	{
-		last_x = xpos;
-		last_y = ypos;
-		first_mouse = false;
-	}
-
-	auto xoffset = (float)(last_x - xpos);
-	auto yoffset = (float)(ypos - last_y);
-	last_x = xpos;
-	last_y = ypos;
-
-	float sensitivity = 0.1f;
-	xoffset *= sensitivity;
-	yoffset *= sensitivity;
-
-	yaw   += xoffset;
-	pitch += yoffset;
-
-	if(pitch > 89.0f)
-		pitch = 89.0f;
-	if(pitch < -89.0f)
-		pitch = -89.0f;
-
-	mat::Vec3 direction;
-	direction.x() = cos(mat::rad(yaw)) * cos(mat::rad(pitch));
-	direction.y() = sin(mat::rad(pitch));
-	direction.z() = sin(mat::rad(yaw)) * cos(mat::rad(pitch));
-	camera_front = mat::normalize(direction);
+	camera.look(xpos, ypos);
 }
 
 void	callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -71,23 +33,9 @@ void	callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 void move() {
 	double new_time = glfwGetTime();
 
-	float speed = 0.005;
 	if (new_time - last_update >= MIN_UPDATE_TIME) {
 		last_update = new_time;
-		if (m_left && !m_right) {
-			mat::Vec3 v = mat::normalize(mat::cross(up, camera_front)) * speed;
-			camera_pos -= v;
-		} else if (m_right && !m_left) {
-			mat::Vec3 v = mat::normalize(mat::cross(up, camera_front)) * speed;
-			camera_pos += v;
-		}
-		if (m_up && !m_down) {
-			mat::Vec3 v = camera_front * speed;
-			camera_pos += v;
-		} else if (m_down && !m_up) {
-			mat::Vec3 v = camera_front * speed;
-			camera_pos -= v;
-		}
+		camera.move(m_up, m_down, m_right, m_left);
 	}
 }
 
@@ -155,6 +103,8 @@ int main()
 		};
 		Texture				texture1("assets/textures/container.jpg", GL_TEXTURE0);
 		Texture				texture2("assets/textures/wall.jpg", GL_TEXTURE1);
+		Texture				texture3("assets/textures/wall.jpg", GL_TEXTURE0);
+		Texture				texture4("assets/textures/wall.jpg", GL_TEXTURE1);
 
 		ShaderProgram		shader("shaders/vertex.glsl", "shaders/fragment.glsl");
 		shader.use();
@@ -170,35 +120,37 @@ int main()
 		VertexBuffer	vbo(cube, 36, GL_STATIC_DRAW);
 		Vertex::set_attrib_pointer();
 
-		mat::Mat4 		perspective = mat::perspective(800, 600, 0.1, 1000, 60);
-		mat::Mat4		transform;
+		Mat4 		p = perspective(800, 600, 0.1, 1000, 60);
+		glUniformMatrix4fv(perspective_loc, 1, GL_TRUE, p.ptr());
+		Mat4		transform;
 
-		unsigned int i = 0;
+		float i = 0;
 		while (!win.should_close()) {
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			move();
-			view = mat::look_at(camera_pos, camera_pos + camera_front, up);
 
 			if (glGetError()) exit(1);
-
-			glUniformMatrix4fv(perspective_loc, 1, GL_TRUE, perspective.ptr());
-			glUniformMatrix4fv(view_loc, 1, GL_TRUE, view.ptr());
-			transform = mat::Mat4();
-			transform.scale({200.0f, 0.01f, 200.0f});
+			texture4.bind();
+			texture3.bind();
+			glUniformMatrix4fv(view_loc, 1, GL_TRUE, camera.view().ptr());
+			transform = Mat4();
+			transform.scale({10.0f, 0.01f, 10.0f});
 			glUniformMatrix4fv(transform_loc, 1, GL_TRUE, transform.ptr());
 			glDrawArrays(GL_TRIANGLES, 0, 36);
-			transform = mat::Mat4();
-			transform.translate({0.0f, 0.5f, 0.0f});
-			glUniformMatrix4fv(transform_loc, 1, GL_TRUE, transform.ptr());
-			glDrawArrays(GL_TRIANGLES, 0, 36);
-
 			texture1.bind();
 			texture2.bind();
+			transform = Mat4();
+			transform.translate({0.0f, 0.5f, 0.0f});
+			transform.rotate({0.0f, 1.0f, 0.0f}, rad((float)i));
+			glUniformMatrix4fv(transform_loc, 1, GL_TRUE, transform.ptr());
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+
 
 			win.swap_buffers();
 			Window::poll_events();
-			i++;
+			if (i > 360.0f) i = 0;
+			i += 0.1;
 		}
 	} catch (const std::exception& e) {
 		std::cout << e.what() << std::endl;
