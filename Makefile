@@ -3,7 +3,7 @@
 NAME =		scop
 
 CXX = 		clang++
-CXXFLAGS = 	-Wall -Wextra -g
+CXXFLAGS = 	-Wall -Wextra -std=c++11 -g
 
 MACOS =		-framework Cocoa -framework OpenGL -framework IOKit -framework CoreVideo
 

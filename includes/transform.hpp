@@ -31,62 +31,56 @@ namespace mat {
 		return new_vec;
 	}
 
-    class Vec4{
-	protected:
-        float* vec;
-    public:
-        Vec4(float x, float y, float z, float w) {
-            vec = new float[4];
-            vec[0] = x;
-            vec[1] = y;
-            vec[2] = z;
-            vec[3] = w;
-        }
-		Vec4() {
-			vec = new float[4];
+	class Vec3 {
+		float* vec;
+	public:
+		Vec3(float x, float y, float z) {
+			vec = new float[3];
+			vec[0] = x;
+			vec[1] = y;
+			vec[2] = z;
+		}
+		Vec3() {
+			vec = new float[3];
 			vec[0] = 0;
 			vec[1] = 0;
 			vec[2] = 0;
-			vec[3] = 0;
 		}
 
 		float x() const {return vec[0]; }
 		float y() const {return vec[1]; }
 		float z() const {return vec[2]; }
-		float w() const {return vec[3]; }
 
 		float& x() {return vec[0]; }
 		float& y() {return vec[1]; }
 		float& z() {return vec[2]; }
-		float& w() {return vec[3]; }
 
-		Vec4&	operator=(const Vec4& v) {
-			memmove(vec, v.vec, 4 * sizeof(float));
+		Vec3(const Vec3& v) : Vec3() { *this = v; }
+
+		Vec3&	operator=(const Vec3& v) {
+			if (this != &v)
+				memmove(vec, v.vec, 4 * sizeof(float));
+			return *this;
 		}
 
-		Vec4	operator*(float f) {
-			return Vec4(x() * f, y() * f, z() * f, w());
+		Vec3	operator*(float f) {
+			return {x() * f, y() * f, z() * f};
 		}
 
-		Vec4	operator+(Vec4 v) {
-			return Vec4(x() + v.x(), y() + v.y(), z() + v.z(), 1.0);
+		Vec3	operator+(const Vec3& v) const {
+			return {x() + v.x(), y() + v.y(), z() + v.z()};
 		}
-		Vec4	operator-(Vec4 v) {
-			return Vec4(x() - v.x(), y() - v.y(), z() - v.z(), 1.0);
+		Vec3	operator-(const Vec3& v) const {
+			return {x() - v.x(), y() - v.y(), z() - v.z()};
 		}
-		Vec4	operator+=(Vec4 v) {
+		Vec3	operator+=(const Vec3& v) {
 			*this = *this + v;
+			return *this;
 		}
-		Vec4	operator-=(Vec4 v) {
+		Vec3	operator-=(const Vec3& v) {
 			*this = *this - v;
+			return *this;
 		}
-    };
-
-	class Vec3 : public Vec4 {
-	public:
-		Vec3() : Vec4() {}
-		Vec3(float x, float y, float z) : Vec4(x, y, z, 1.0) {}
-
 
 	};
 
@@ -96,7 +90,7 @@ namespace mat {
 		float* mat;
 
 	public:
-        Mat4(float* mat): mat(mat) {}
+        explicit Mat4(float* mat): mat(mat) {}
 
 		Mat4() {
 			float tmp[] = {
@@ -126,7 +120,7 @@ namespace mat {
 		}
 
 		Mat4	operator*(const Mat4& m) {
-            float* C = new float[mat_len*mat_len];
+            auto C = new float[mat_len*mat_len];
             int col;
             for (unsigned int k = 0; k < mat_len; k++) {
                 col = 0;
@@ -134,25 +128,30 @@ namespace mat {
                     C[j + (mat_len * k)] = 0;
                     for (unsigned int i = 0; i < mat_len; i++) {
                         C[j + (mat_len * k)] += (*this)[i + (mat_len * k)] * m[(i * mat_len) + col];
-                    };
+                    }
                     col++;
                 }
             }
             return (Mat4(C));
 		}
 
-        Mat4&    operator=(const Mat4& m) {
-            memmove(mat, m.mat, 16 * sizeof(float));
-            return *this;
-        }
+		Mat4&    operator=(const Mat4& m) {
+			if (this != &m)
+				memmove(mat, m.mat, 16 * sizeof(float));
+			return *this;
+		}
 
-		void	scale(const Vec4 & v) {
+		Mat4&    operator=(const float * f) {
+			memmove(mat, f, 16 * sizeof(float));
+			return *this;
+		}
+
+		void	scale(const Vec3 & v) {
 			Mat4 m;
 
 			m[0] = v.x();
 			m[5] = v.y();
 			m[10] = v.z();
-			m[15] = v.w();
 
 			*this = *this * m;
 		}
@@ -163,17 +162,15 @@ namespace mat {
 			m[0] = v[0];
 			m[5] = v[1];
 			m[10] = v[2];
-			m[15] = v[3];
 
 			*this = *this * m;
 		}
-		void	translate(const Vec4 & v) {
+		void	translate(const Vec3 & v) {
 			Mat4 m;
 
 			m[3] = v.x();
 			m[7] = v.y();
 			m[11] = v.z();
-			m[15] = v.w();
 
 			*this = *this * m;
 		}
@@ -184,7 +181,6 @@ namespace mat {
 			m[3] = v[0];
 			m[7] = v[1];
 			m[11] = v[2];
-			m[15] = v[3];
 			*this = *this * m;
 		}
 
@@ -194,14 +190,13 @@ namespace mat {
 			float x = v[0];
 			float y = v[1];
 			float z = v[2];
-			float w = v[3];
 			float c = cosf(angle);
 			float s = sinf(angle);
-			float tmp[] = {
-					c + x * x * (1.0 - c), x * y * (1.0 - c) - z * s, x * z * (1.0 - c) + y * s, 0.0,
-					y * x * (1.0 - c) + z * s, c + y * y * (1.0 - c), y * z * (1.0 - c) - x * s, 0.0,
-					z * x * (1.0 - c) - y * s, z * y * (1.0 - c) + x * s, c + z * z * (1.0 - c), 0.0,
-					0.0, 0.0, 0.0, w
+			const float tmp[] = {
+					c + x * x * (1.0f - c), x * y * (1.0f - c) - z * s, x * z * (1.0f - c) + y * s, 0.0f,
+					y * x * (1.0f - c) + z * s, c + y * y * (1.0f - c), y * z * (1.0f - c) - x * s, 0.0f,
+					z * x * (1.0f - c) - y * s, z * y * (1.0f - c) + x * s, c + z * z * (1.0f - c), 0.0f,
+					0.0, 0.0, 0.0, 1.0f
 			};
 			memmove(f, tmp, 16 * sizeof(float));
 
@@ -209,20 +204,19 @@ namespace mat {
 			*this = *this * m;
 		}
 
-		void	rotate(const Vec4 & v, float angle) {
-			float * f = std::allocator<float>().allocate(16);
+		void	rotate(const Vec3 & v, float angle) {
+			auto f = new float[16];
 
 			float x = v.x();
 			float y = v.y();
 			float z = v.z();
-			float w = v.w();
 			float c = cosf(angle);
 			float s = sinf(angle);
 			float tmp[] = {
-					c + x * x * (1.0 - c), x * y * (1.0 - c) - z * s, x * z * (1.0 - c) + y * s, 0.0,
-					y * x * (1.0 - c) + z * s, c + y * y * (1.0 - c), y * z * (1.0 - c) - x * s, 0.0,
-					z * x * (1.0 - c) - y * s, z * y * (1.0 - c) + x * s, c + z * z * (1.0 - c), 0.0,
-					0.0, 0.0, 0.0, w
+					c + x * x * (1.0f - c), x * y * (1.0f - c) - z * s, x * z * (1.0f - c) + y * s, 0.0f,
+					y * x * (1.0f - c) + z * s, c + y * y * (1.0f - c), y * z * (1.0f - c) - x * s, 0.0f,
+					z * x * (1.0f - c) - y * s, z * y * (1.0f - c) + x * s, c + z * z * (1.0f - c), 0.0f,
+					0.0, 0.0, 0.0, 1.0f
 			};
 			memmove(f, tmp, 16 * sizeof(float));
 
@@ -234,9 +228,9 @@ namespace mat {
 	Mat4 perspective(float w, float h, float z_near, float  z_far, float fov) {
 		const float ar = w / h;
 		const float z_range = z_near - z_far;
-		const float tan_fov = tanf(rad(fov / 2.0));
+		const float tan_fov = tanf(rad(fov / 2.0f));
 
-		float* f = new float[16];
+		auto f = new float[16];
 
 		float tmp[] = {
 				1.0f / (tan_fov * ar), 0.0f, 0.0f, 0.0f,
@@ -246,7 +240,25 @@ namespace mat {
 		};
 		memmove(f, tmp, 16 * sizeof(float));
 		return Mat4(f);
-//		return Mat4();
+	}
+
+	Mat4 look_at(const Vec3& from, const Vec3& to, const Vec3& up) {
+		mat::Vec3	d(mat::normalize(from - to));
+		mat::Vec3	r(mat::normalize(mat::cross(up, d)));
+		mat::Vec3	u(cross(d, r));
+		float f[] = {
+			r.x(), r.y(), r.z(), 0.0f,
+			u.x(), u.y(), u.z(), 0.0f,
+			d.x(), d.y(), d.z(), 0.0f,
+			0.0f, 0.0f, 0.0f, 1.0f
+		};
+		mat::Mat4	m1;
+		m1 = f;
+		mat::Mat4	m2;
+		m2[3] = from.x();
+		m2[7] = from.y();
+		m2[11] = from.z();
+		return m1 * m2;
 	}
 
 	std::ostream& operator<<(std::ostream& os, const Mat4& m) {

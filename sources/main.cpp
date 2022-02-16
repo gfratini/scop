@@ -1,6 +1,14 @@
 #include "main.hpp"
 
-mat::Mat4	t;
+mat::Vec3	camera_pos(0.0, 0.0, 3.0);
+mat::Vec3	camera_target;
+mat::Vec3	camera_direction(mat::normalize(camera_pos - camera_target));
+mat::Vec3	up(0.0,1.0,0.0);
+mat::Vec3	camera_right(mat::normalize(mat::cross(up, camera_direction)));
+mat::Vec3	camera_up(mat::cross(camera_direction, camera_right));
+mat::Vec3	camera_front;
+
+mat::Mat4	view(mat::look_at(camera_pos, camera_target, up));
 
 int		m_left = 0;
 int		m_up = 0;
@@ -15,17 +23,14 @@ int s_down = 0;
 
 double		last_update = 0;
 
-mat::Vec4	camera_front;
-mat::Vec4	camera;
-mat::Vec4	up(0.0, 1.0, 0.0, 1.0);
-
-double	last_x = 0;
-double	last_y = 0;
-float	yaw = 0;
+double	last_x = 800 / 2.0;
+double	last_y = 600 / 2.0;
+float	yaw = -90.0f;
 float	pitch = 0;
 bool	first_mouse = true;
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
+(void) window;
 	if (first_mouse)
 	{
 		last_x = xpos;
@@ -33,8 +38,8 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 		first_mouse = false;
 	}
 
-	float xoffset = (float)(xpos - last_x);
-	float yoffset = (float)(last_y - ypos);
+	auto xoffset = (float)(xpos - last_x);
+	auto yoffset = (float)(last_y - ypos);
 	last_x = xpos;
 	last_y = ypos;
 
@@ -50,7 +55,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 	if(pitch < -89.0f)
 		pitch = -89.0f;
 
-	mat::Vec4 direction;
+	mat::Vec3 direction;
 	direction.x() = cos(mat::rad(yaw)) * cos(mat::rad(pitch));
 	direction.y() = sin(mat::rad(pitch));
 	direction.z() = sin(mat::rad(yaw)) * cos(mat::rad(pitch));
@@ -83,33 +88,29 @@ void move() {
 	if (new_time - last_update >= MIN_UPDATE_TIME) {
 		last_update = new_time;
 		if (m_left && !m_right) {
-			mat::Vec4 v = mat::normalize(mat::cross(camera_front, up));
-			camera += v;
+			mat::Vec3 v = mat::normalize(mat::cross(up, camera_front));
+			camera_pos += v;
 		} else if (m_right && !m_left) {
-			mat::Vec4 v = camera_front * speed;
-			camera -= v;
+			mat::Vec3 v = mat::normalize(mat::cross(up, camera_front));
+			camera_pos -= v;
 		}
 		if (m_up && !m_down) {
-			mat::Vec4 v = camera_front * speed;
-			camera += v;
+			mat::Vec3 v = camera_front * speed;
+			camera_pos += v;
 		} else if (m_down && !m_up) {
-			mat::Vec4 v = camera_front * speed;
-			camera -= v;
+			mat::Vec3 v = camera_front * speed;
+			camera_pos -= v;
 		}
 		if (r_left && !r_right) {
-			float f[] = {0.0, 1.0, 0.0, 1.0};
-			t.rotate(f, mat::rad(1));
+			view.rotate({0.0, 1.0, 0.0}, mat::rad(1));
 		} else if (r_right && !r_left) {
-			float f[] = {0.0, 1.0, 0.0, 1.0};
-			t.rotate(f, mat::rad(-1));
+			view.rotate({0.0, 1.0, 0.0}, mat::rad(-1));
 		}
 		if (s_up && !s_down) {
-			float f[] = {1.01, 1.01, 1.01, 1.0};
-			t.scale(f);
+			view.scale({1.01, 1.01, 1.01});
 		}
 		if (s_down && !s_up) {
-			float f[] = {0.99, 0.99, 0.99, 1.0};
-			t.scale(f);
+			view.scale({0.99, 0.99, 0.99});
 		}
 	}
 }
@@ -172,10 +173,10 @@ int main()
 				-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 		};
 
-		unsigned int indices[] = {
-			0, 1, 3,
-			1, 2, 3
-		};
+//		unsigned int indices[] = {
+//			0, 1, 3,
+//			1, 2, 3
+//		};
 		Texture				texture1("assets/textures/container.jpg", GL_TEXTURE0);
 		Texture				texture2("assets/textures/wall.jpg", GL_TEXTURE1);
 
@@ -191,30 +192,30 @@ int main()
 		VertexArrayBuffer	array_buffer;
 		VertexBuffer	vbo(vertices, 36, GL_STATIC_DRAW);
 		Vertex::set_attrib_pointer();
-//		IndexBuffer		ibo(indices, 6, GL_STATIC_DRAW);
 
-		mat::Mat4 		perspective = mat::perspective(800, 600, 0.0, 100, 60);
+		mat::Mat4 		perspective = mat::perspective(800, 600, 0.1, 1000, 45);
 		mat::Mat4		transform;
-//		mat::Mat4		view;
-//		transform.scale(mat::Vec4(1.2, 1.2, 1.2, 1.0));
-		transform.rotate(mat::Vec4(1.0, 0.0, 0.0, 1.0), mat::rad(55.0));
-		transform.rotate(mat::Vec4(0.0, 1.0, 0.0, 1.0), mat::rad(30.0));
-		t.translate(mat::Vec4(0.0, 0.0, 5, 1.0));
+		transform.rotate(mat::Vec3(1.0, 0.0, 0.0), mat::rad(55.0));
+		transform.rotate(mat::Vec3(0.0, 1.0, 0.0), mat::rad(30.0));
 
 		unsigned int i = 0;
 		while (!win.should_close()) {
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			glDrawArrays(GL_TRIANGLES, 0, 36);
+
+			move();
+			view = mat::look_at(camera_pos, camera_pos + camera_front, up);
+
+//			std::cout << view << std::endl;
 
 			if (glGetError()) exit(1);
 
 			glUniformMatrix4fv(perspective_loc, 1, GL_TRUE, perspective.ptr());
-			glUniformMatrix4fv(view_loc, 1, GL_TRUE, t.ptr());
+			glUniformMatrix4fv(view_loc, 1, GL_TRUE, view.ptr());
 			glUniformMatrix4fv(transform_loc, 1, GL_TRUE, transform.ptr());
+			glDrawArrays(GL_TRIANGLES, 0, 36);
 			texture1.bind();
 			texture2.bind();
 
-			move();
 
 			win.swap_buffers();
 			Window::poll_events();

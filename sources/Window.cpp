@@ -21,7 +21,7 @@ Window::Window(int width, int height, const std::string& title) {
 
 	glfwMakeContextCurrent(win);
 	glfwSetInputMode(win, GLFW_STICKY_KEYS, GLFW_TRUE);
-	glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+//	glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSwapInterval(0);
 }
 
