@@ -14,11 +14,14 @@ private:
 
 	static unsigned int create_shader(const std::string& file, GLenum type);
 public:
+	ShaderProgram();
 	ShaderProgram(const std::string& vs_file, const std::string& fs_file);
 	~ShaderProgram();
 	unsigned int id() const;
 
+	void	create(const std::string& vs_file, const std::string& fs_file);
 	void	use() const;
+	void	send_texture(unsigned int uniform, unsigned int num) const;
 };
 
 #endif //SCOP_CPP_SHADERPROGRAM_HPP

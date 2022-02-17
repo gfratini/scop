@@ -36,6 +36,7 @@ public:
 
 	void	bind() const;
 	void	set_vertices(const float *vertices, unsigned int num, GLenum usage);
+	int		len() const;
 };
 
 

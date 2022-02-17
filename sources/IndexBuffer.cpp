@@ -48,3 +48,11 @@ void IndexBuffer::set_indices(const int *indices, const unsigned int num, GLenum
 		_idx[i] = indices[i];
 	}
 }
+
+int IndexBuffer::len() const {
+	return (int)_num;
+}
+
+void *IndexBuffer::ptr() const {
+	return (void*)_idx;
+}

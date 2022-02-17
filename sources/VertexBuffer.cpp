@@ -47,3 +47,7 @@ void VertexBuffer::set_vertices(const float *vertices, const unsigned int num, G
 		((float *)_v)[i] = vertices[i];
 	}
 }
+
+int VertexBuffer::len() const {
+	return (int)_num;
+}

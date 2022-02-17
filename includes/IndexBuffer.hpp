@@ -19,8 +19,10 @@ public:
 	~IndexBuffer();
 	IndexBuffer(const unsigned int * indices, unsigned int num, GLenum usage);
 
-	void bind() const;
-	void set_indices(const int *indices, unsigned int num, GLenum usage);
+	void	bind() const;
+	void	set_indices(const int *indices, unsigned int num, GLenum usage);
+	int		len() const;
+	void*	ptr() const;
 };
 
 

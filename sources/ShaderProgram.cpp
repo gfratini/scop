@@ -61,3 +61,25 @@ unsigned int ShaderProgram::id() const {
 void ShaderProgram::use() const {
 	glUseProgram(program_id);
 }
+
+void ShaderProgram::send_texture(unsigned int uniform, unsigned int num) const {
+	glUniform1i(uniform, num);
+}
+
+ShaderProgram::ShaderProgram() : program_id(0) {}
+
+void ShaderProgram::create(const std::string &vs_file, const std::string &fs_file) {
+	unsigned int vertex_shader;
+	unsigned int fragment_shader;
+
+	program_id = glCreateProgram();
+
+	vertex_shader = ShaderProgram::create_shader(vs_file, GL_VERTEX_SHADER);
+	fragment_shader = ShaderProgram::create_shader(fs_file, GL_FRAGMENT_SHADER);
+
+	glAttachShader(program_id, vertex_shader);
+	glAttachShader(program_id, fragment_shader);
+	glLinkProgram(program_id);
+	glDeleteShader(vertex_shader);
+	glDeleteShader(fragment_shader);
+}

@@ -7,16 +7,23 @@
 
 #include "GL/glew.h"
 #include <string>
+#include "ShaderProgram.hpp"
+
+#define TEX_UNIFORM_NAME "tex"
+
 class Texture {
 private:
 	unsigned int texture_id;
 	GLenum _pos;
+	unsigned int location;
 
 public:
+	Texture();
 	Texture(const std::string& file, GLenum unit);
 	~Texture();
 
-	void	bind();
+	void	create(const std::string& file, GLenum unit);
+	void	bind(const ShaderProgram& s);
 };
 
 #endif //SCOP_CPP_TEXTURE_HPP

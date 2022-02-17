@@ -23,5 +23,6 @@
 #include "Texture.hpp"
 #include "transform.hpp"
 #include "Camera.hpp"
+#include "Object.hpp"
 
 #endif //SCOP_CPP_MAIN_HPP

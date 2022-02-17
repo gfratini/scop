@@ -30,12 +30,13 @@ void	callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	else if (key == 'D') m_right = val;
 }
 
-void move() {
+void move(int view_loc) {
 	double new_time = glfwGetTime();
 
 	if (new_time - last_update >= MIN_UPDATE_TIME) {
 		last_update = new_time;
 		camera.move(m_up, m_down, m_right, m_left);
+		glUniformMatrix4fv(view_loc, 1, GL_TRUE, camera.view().ptr());
 	}
 }
 
@@ -103,15 +104,12 @@ int main()
 		};
 		Texture				texture1("assets/textures/container.jpg", GL_TEXTURE0);
 		Texture				texture2("assets/textures/wall.jpg", GL_TEXTURE1);
-		Texture				texture3("assets/textures/wall.jpg", GL_TEXTURE0);
-		Texture				texture4("assets/textures/wall.jpg", GL_TEXTURE1);
 
 		ShaderProgram		shader("shaders/vertex.glsl", "shaders/fragment.glsl");
 		shader.use();
 		glUniform1i(glGetUniformLocation(shader.id(), "texture1"), 0);
 		glUniform1i(glGetUniformLocation(shader.id(), "texture2"), 1);
 
-		int transform_loc = glGetUniformLocation(shader.id(), "transform");
 		int perspective_loc = glGetUniformLocation(shader.id(), "perspective");
 		int view_loc = glGetUniformLocation(shader.id(), "view");
 
@@ -122,35 +120,25 @@ int main()
 
 		Mat4 		p = perspective(800, 600, 0.1, 1000, 60);
 		glUniformMatrix4fv(perspective_loc, 1, GL_TRUE, p.ptr());
-		Mat4		transform;
+		glUniformMatrix4fv(view_loc, 1, GL_TRUE, camera.view().ptr());
 
-		float i = 0;
+		Object	cube_obj(shader, vbo, texture1);
+		cube_obj.translate({0.0f, 0.5f, 0.0f});
+
+		Object	plane_obj(shader, vbo, texture2);
+		plane_obj.scale({10.0f, 0.1f, 10.0f});
 		while (!win.should_close()) {
+			cube_obj.rotate({0.0f, 1.0f, 0.0f}, 0.1);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			move();
+			move(view_loc);
 
-			if (glGetError()) exit(1);
-			texture4.bind();
-			texture3.bind();
-			glUniformMatrix4fv(view_loc, 1, GL_TRUE, camera.view().ptr());
-			transform = Mat4();
-			transform.scale({10.0f, 0.01f, 10.0f});
-			glUniformMatrix4fv(transform_loc, 1, GL_TRUE, transform.ptr());
-			glDrawArrays(GL_TRIANGLES, 0, 36);
-			texture1.bind();
-			texture2.bind();
-			transform = Mat4();
-			transform.translate({0.0f, 0.5f, 0.0f});
-			transform.rotate({0.0f, 1.0f, 0.0f}, rad((float)i));
-			glUniformMatrix4fv(transform_loc, 1, GL_TRUE, transform.ptr());
-			glDrawArrays(GL_TRIANGLES, 0, 36);
-
+//			if (glGetError()) exit(1);
+			cube_obj.draw();
+//			plane_obj.draw();
 
 			win.swap_buffers();
 			Window::poll_events();
-			if (i > 360.0f) i = 0;
-			i += 0.1;
 		}
 	} catch (const std::exception& e) {
 		std::cout << e.what() << std::endl;
