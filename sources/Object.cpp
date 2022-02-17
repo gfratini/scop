@@ -40,6 +40,7 @@ Object::Object(const ShaderProgram &shader, const VertexBuffer &obj, const Index
    _index_buffer(ibo),
    _texture(t_file, pos)
 {
+	_index_buffer.info();
 	_use_ibo = true;
 }
 
@@ -112,16 +113,17 @@ void Object::rotate(const Vec3 &plane, float angle) {
 
 void Object::draw() {
 	GL_CHECK(_shader.use(););
-	GL_CHECK(_vertex_buffer.bind(););
 	if (_use_ibo)
 		_index_buffer.bind();
+	GL_CHECK(_vertex_buffer.bind(););
 	GL_CHECK(_texture.bind(_shader););
 
 	int location = glGetUniformLocation(_shader.id(), TRANSFORM_UNIFORM);
 	GL_CHECK(glUniformMatrix4fv(location, 1, GL_TRUE, _transform.ptr()););
 
-	if (_use_ibo)
-		glDrawElements(DRAW_MODE, _index_buffer.len(), GL_UNSIGNED_INT, _index_buffer.ptr());
+	if (_use_ibo) {
+		GL_CHECK(glDrawElements(DRAW_MODE, _index_buffer.len(), GL_UNSIGNED_INT, 0););
+	}
 	else
 		GL_CHECK(glDrawArrays(DRAW_MODE, 0, _vertex_buffer.len()););
 }

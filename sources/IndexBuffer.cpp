@@ -7,15 +7,12 @@
 
 IndexBuffer::IndexBuffer()
  : _buffer_id(0),
-   _idx(NULL),
    _num(0) {
 	glGenBuffers(1, &_buffer_id);
-
 }
 
 IndexBuffer::~IndexBuffer() {
 	glDeleteBuffers(1, &_buffer_id);
-	delete[] _idx;
 }
 
 IndexBuffer::IndexBuffer(const unsigned int *indices, const unsigned int num, GLenum usage) {
@@ -23,12 +20,7 @@ IndexBuffer::IndexBuffer(const unsigned int *indices, const unsigned int num, GL
 	_buffer_id = 0;
 	glGenBuffers(1, &_buffer_id);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _buffer_id);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, (sizeof(float) * _num), indices, usage);
-
-	_idx = std::allocator<unsigned int>().allocate(_num);
-	for (unsigned int i = 0; i < num; ++i) {
-		_idx[i] = indices[i];
-	}
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, (sizeof(unsigned int) * _num), indices, usage);
 }
 
 void IndexBuffer::bind() const {
@@ -40,19 +32,11 @@ void IndexBuffer::set_indices(const int *indices, const unsigned int num, GLenum
 
 	_num = num;
 	glGenBuffers(1, &_buffer_id);
-	glBindBuffer(GL_ARRAY_BUFFER, _buffer_id);
-	glBufferData(GL_ARRAY_BUFFER, (sizeof(float) * _num), indices, usage);
-
-	_idx = std::allocator<unsigned int>().allocate(_num);
-	for (unsigned int i = 0; i < _num; ++i) {
-		_idx[i] = indices[i];
-	}
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _buffer_id);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, (sizeof(unsigned int) * _num), indices, usage);
 }
 
 int IndexBuffer::len() const {
 	return (int)_num;
 }
 
-void *IndexBuffer::ptr() const {
-	return (void*)_idx;
-}

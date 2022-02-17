@@ -7,11 +7,11 @@
 
 
 #include "GL/glew.h"
-
+#include <iostream>
+#include "VertexBuffer.hpp"
 class IndexBuffer {
 private:
 	unsigned int	_buffer_id;
-	unsigned int*	_idx;
 	unsigned int	_num;
 
 public:
@@ -22,7 +22,9 @@ public:
 	void	bind() const;
 	void	set_indices(const int *indices, unsigned int num, GLenum usage);
 	int		len() const;
-	void*	ptr() const;
+	inline void info() {
+		std::cout << "id: " << _buffer_id << "  len: " << _num << std::endl;
+	}
 };
 
 
