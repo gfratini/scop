@@ -38,9 +38,9 @@ Texture::~Texture() {
 void	Texture::bind(const ShaderProgram& s) {
 	if (location == 0)
 		location = glGetUniformLocation(s.id(), TEX_UNIFORM_NAME);
-	s.send_texture(location, _pos);
 	glActiveTexture(_pos);
 	glBindTexture(GL_TEXTURE_2D, texture_id);
+	s.send_texture(location, _pos - GL_TEXTURE0);
 }
 
 Texture::Texture() = default;

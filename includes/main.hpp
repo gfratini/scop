@@ -24,5 +24,6 @@
 #include "transform.hpp"
 #include "Camera.hpp"
 #include "Object.hpp"
+#include "utils.hpp"
 
 #endif //SCOP_CPP_MAIN_HPP

@@ -102,13 +102,11 @@ int main()
 			0, 1, 2,
 			3, 1, 2
 		};
-		Texture				texture1("assets/textures/container.jpg", GL_TEXTURE0);
-		Texture				texture2("assets/textures/wall.jpg", GL_TEXTURE1);
 
 		ShaderProgram		shader("shaders/vertex.glsl", "shaders/fragment.glsl");
 		shader.use();
-		glUniform1i(glGetUniformLocation(shader.id(), "texture1"), 0);
-		glUniform1i(glGetUniformLocation(shader.id(), "texture2"), 1);
+//		GL_CHECK(glUniform1i(glGetUniformLocation(shader.id(), "tex"), 0););
+//		glUniform1i(glGetUniformLocation(shader.id(), "tex"), 1);
 
 		int perspective_loc = glGetUniformLocation(shader.id(), "perspective");
 		int view_loc = glGetUniformLocation(shader.id(), "view");
@@ -122,20 +120,21 @@ int main()
 		glUniformMatrix4fv(perspective_loc, 1, GL_TRUE, p.ptr());
 		glUniformMatrix4fv(view_loc, 1, GL_TRUE, camera.view().ptr());
 
-		Object	cube_obj(shader, vbo, texture1);
+		std::cout << vbo.id() << std::endl;
+		Object	cube_obj(shader, vbo, "assets/textures/container.jpg", GL_TEXTURE0);
 		cube_obj.translate({0.0f, 0.5f, 0.0f});
 
-		Object	plane_obj(shader, vbo, texture2);
+		Object	plane_obj(shader, vbo, "assets/textures/wall.jpg", GL_TEXTURE0);
 		plane_obj.scale({10.0f, 0.1f, 10.0f});
 		while (!win.should_close()) {
-			cube_obj.rotate({0.0f, 1.0f, 0.0f}, 0.1);
+			cube_obj.rotate({0.0f, 1.0f, 0.0f}, 0.01);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			move(view_loc);
+			GL_CHECK(move(view_loc););
 
 //			if (glGetError()) exit(1);
 			cube_obj.draw();
-//			plane_obj.draw();
+			plane_obj.draw();
 
 			win.swap_buffers();
 			Window::poll_events();

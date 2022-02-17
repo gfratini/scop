@@ -27,7 +27,6 @@ struct Vertex {
 class VertexBuffer {
 private:
 	unsigned int	_buffer_id;
-	Vertex*			_v;
 	unsigned int 	_num;
 public:
 	VertexBuffer();
@@ -37,6 +36,7 @@ public:
 	void	bind() const;
 	void	set_vertices(const float *vertices, unsigned int num, GLenum usage);
 	int		len() const;
+	unsigned int	id() const;
 };
 
 

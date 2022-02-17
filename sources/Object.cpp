@@ -3,7 +3,7 @@
 //
 
 #include "Object.hpp"
-
+#include "utils.hpp"
 Object::Object() {
 	_use_ibo = false;
 }
@@ -104,32 +104,11 @@ void Object::scale(const Vec3 &vec) {
 
 void Object::translate(const Vec3 &vec) {
 	_transform.translate(vec);
-
 }
 
 void Object::rotate(const Vec3 &plane, float angle) {
 	_transform.rotate(plane, rad(angle));
 }
-
-void CheckOpenGLError(const char* stmt, const char* fname, int line)
-{
-	GLenum err = glGetError();
-	if (err != GL_NO_ERROR)
-	{
-		printf("OpenGL error %08x, at %s:%i - for %s\n", err, fname, line, stmt);
-		abort();
-	}
-}
-#define AAA
-#ifdef AAA
-#define GL_CHECK(stmt) do { \
-            while (glGetError() != GL_NO_ERROR); \
-            stmt; \
-            CheckOpenGLError(#stmt, __FILE__, __LINE__); \
-        } while (0)
-#else
-#define GL_CHECK(stmt) stmt
-#endif
 
 void Object::draw() {
 	GL_CHECK(_shader.use(););
