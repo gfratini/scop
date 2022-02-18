@@ -40,6 +40,17 @@ void move(int view_loc) {
 	}
 }
 
+
+#ifdef TEST_PARSE
+
+int main() {
+	Parser p;
+
+	p.parse("assets/objects/untitled.obj");
+}
+
+#else
+
 int main()
 {
 	const unsigned int WIDTH = 1920;
@@ -106,8 +117,8 @@ int main()
 				-0.5f,  0.5f, 0.0f,   0.0f, 1.0f    // top left
 		};
 		unsigned int indices[] = {
-			0, 1, 2,
-			3
+			0, 1, 3,
+			1, 2, 3
 		};
 
 		ShaderProgram		shader("shaders/vertex.glsl", "shaders/fragment.glsl");
@@ -117,14 +128,14 @@ int main()
 		int view_loc = glGetUniformLocation(shader.id(), "view");
 
 		VertexArrayBuffer	array_buffer;
-		IndexBuffer		ibo(indices, 4, GL_STATIC_DRAW);
+		IndexBuffer		ibo(indices, 6, GL_STATIC_DRAW);
 
 		Mat4 		p = perspective(WIDTH, HEIGHT, 0.1, 1000, 60);
 		glUniformMatrix4fv(perspective_loc, 1, GL_TRUE, p.ptr());
 		glUniformMatrix4fv(view_loc, 1, GL_TRUE, camera.view().ptr());
 
 		VertexBuffer	aaa(vertices, 4, GL_STATIC_DRAW);
-		Object	plane_obj(shader, aaa, ibo, "assets/textures/wall.jpg", GL_TEXTURE0);
+		Object	plane_obj(shader, aaa, ibo, "assets/textures/slaveeni.png", GL_TEXTURE0);
 
 		VertexBuffer	vbo(cube, 36, GL_STATIC_DRAW);
 		Object	cube_obj(shader, vbo, "assets/textures/container.jpg", GL_TEXTURE0);
@@ -161,3 +172,5 @@ int main()
 	glfwTerminate();
     return exit_status;
 }
+
+#endif

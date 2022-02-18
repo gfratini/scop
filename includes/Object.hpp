@@ -10,7 +10,10 @@
 #include "IndexBuffer.hpp"
 #include "Texture.hpp"
 #include "transform.hpp"
+#include "Parser.hpp"
+
 #define TRANSFORM_UNIFORM "transform"
+
 class Object {
 private:
 	ShaderProgram	_shader;

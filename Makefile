@@ -24,7 +24,8 @@ FILES =		main.cpp \
 			IndexBuffer.cpp \
 			Texture.cpp \
 			Camera.cpp \
-			Object.cpp
+			Object.cpp \
+			Parser.cpp
 
 SRCS = 		$(foreach FILE, $(FILES), $(shell find $(SRCDIR) -name $(FILE)))
 OBJS = 		$(patsubst $(SRCDIR)/%, $(OBJDIR)/%, $(SRCS:.cpp=.o))
