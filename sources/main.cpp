@@ -106,8 +106,8 @@ int main()
 				-0.5f,  0.5f, 0.0f,   0.0f, 1.0f    // top left
 		};
 		unsigned int indices[] = {
-			0, 1, 3,
-			1, 2, 3
+			0, 1, 2,
+			3
 		};
 
 		ShaderProgram		shader("shaders/vertex.glsl", "shaders/fragment.glsl");
@@ -117,22 +117,25 @@ int main()
 		int view_loc = glGetUniformLocation(shader.id(), "view");
 
 		VertexArrayBuffer	array_buffer;
-		IndexBuffer		ibo(indices, 6, GL_STATIC_DRAW);
+		IndexBuffer		ibo(indices, 4, GL_STATIC_DRAW);
 
 		Mat4 		p = perspective(WIDTH, HEIGHT, 0.1, 1000, 60);
 		glUniformMatrix4fv(perspective_loc, 1, GL_TRUE, p.ptr());
 		glUniformMatrix4fv(view_loc, 1, GL_TRUE, camera.view().ptr());
 
 		VertexBuffer	aaa(vertices, 4, GL_STATIC_DRAW);
-		Object	cube_obj(shader, aaa, ibo, "assets/textures/container.jpg", GL_TEXTURE0);
-		cube_obj.translate({0.0f, 0.5f, 0.0f});
+		Object	plane_obj(shader, aaa, ibo, "assets/textures/wall.jpg", GL_TEXTURE0);
 
 		VertexBuffer	vbo(cube, 36, GL_STATIC_DRAW);
-		Object	plane_obj(shader, vbo, "assets/textures/obama2.png", GL_TEXTURE0);
-		plane_obj.scale({10.0f, 0.01f, 10.0f});
+		Object	cube_obj(shader, vbo, "assets/textures/container.jpg", GL_TEXTURE0);
 
+		float i = 0;
 		while (!win.should_close()) {
-			cube_obj.rotate({0.0f, 1.0f, 0.0f}, 0.02);
+			plane_obj.rotate({1.0f, 0.0f, 0.0f}, 90);
+			plane_obj.scale({10.0f, 10.0f, 10.0f});
+			cube_obj.rotate({0.0f, 1.0f, 0.0f}, i);
+			cube_obj.scale({10.0f, 10.0f, 1.0f});
+			cube_obj.translate({0.0f, 0.5f, 0.0f});
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			GL_CHECK(move(view_loc););
@@ -145,6 +148,8 @@ int main()
 
 			win.swap_buffers();
 			Window::poll_events();
+			i += 0.1;
+			if (i >= 360) i = 0;
 		}
 	} catch (const std::exception& e) {
 		std::cout << e.what() << std::endl;

@@ -236,7 +236,7 @@ inline Mat4 perspective(float w, float h, float z_near, float  z_far, float fov)
 			1.0f / (tan_fov * ar), 0.0f, 0.0f, 0.0f,
 			0.0f, 1.0f / tan_fov, 0.0f, 0.0f,
 			0.0f, 0.0f, (-z_near - z_far) / z_range, 2.0f * z_far * z_near / z_range,
-			0.0f, 0.0f, 1.0f, 1.0f
+			0.0f, 0.0f, 1.0f, 0.0f
 	};
 	memmove(f, tmp, 16 * sizeof(float));
 	return Mat4(f);

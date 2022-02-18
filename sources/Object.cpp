@@ -122,9 +122,10 @@ void Object::draw() {
 	GL_CHECK(glUniformMatrix4fv(location, 1, GL_TRUE, _transform.ptr()););
 
 	if (_use_ibo)
-		GL_CHECK(glDrawElements(DRAW_MODE, _index_buffer.len(), GL_UNSIGNED_INT, 0););
+		GL_CHECK(glDrawElements(GL_TRIANGLE_FAN, _index_buffer.len(), GL_UNSIGNED_INT, 0););
 	else
-		GL_CHECK(glDrawArrays(DRAW_MODE, 0, _vertex_buffer.len()););
+		GL_CHECK(glDrawArrays(GL_TRIANGLES, 0, _vertex_buffer.len()););
+	_transform = Mat4();
 }
 
 std::pair<VertexBuffer, IndexBuffer> Object::parse_file(const std::string &file) {

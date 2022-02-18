@@ -19,7 +19,6 @@ private:
 	Texture			_texture;
 	Mat4			_transform;
 	bool			_use_ibo;
-	const unsigned int DRAW_MODE = GL_TRIANGLES;
 public:
 	Object();
 	Object(const ShaderProgram& shader, const VertexBuffer& obj, const Texture& tex);
