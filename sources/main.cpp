@@ -117,37 +117,31 @@ int main()
 		int view_loc = glGetUniformLocation(shader.id(), "view");
 
 		VertexArrayBuffer	array_buffer;
-		VertexBuffer	aaa(vertices, 4, GL_STATIC_DRAW);
 		IndexBuffer		ibo(indices, 6, GL_STATIC_DRAW);
-//		VertexBuffer	vbo(cube, 36, GL_STATIC_DRAW);
-		Vertex::set_attrib_pointer();
 
 		Mat4 		p = perspective(WIDTH, HEIGHT, 0.1, 1000, 60);
 		glUniformMatrix4fv(perspective_loc, 1, GL_TRUE, p.ptr());
 		glUniformMatrix4fv(view_loc, 1, GL_TRUE, camera.view().ptr());
 
-//		Object	cube_obj(shader, aaa, ibo, "assets/textures/container.jpg", GL_TEXTURE0);
-//		cube_obj.translate({0.0f, 0.5f, 0.0f});
-//
-//		Object	plane_obj(shader, vbo, "assets/textures/obama2.png", GL_TEXTURE0);
-//		plane_obj.scale({10.0f, 0.01f, 10.0f});
-		Texture	t("assets/textures/wall.jpg", GL_TEXTURE0);
+		VertexBuffer	aaa(vertices, 4, GL_STATIC_DRAW);
+		Object	cube_obj(shader, aaa, ibo, "assets/textures/container.jpg", GL_TEXTURE0);
+		cube_obj.translate({0.0f, 0.5f, 0.0f});
+
+		VertexBuffer	vbo(cube, 36, GL_STATIC_DRAW);
+		Object	plane_obj(shader, vbo, "assets/textures/obama2.png", GL_TEXTURE0);
+		plane_obj.scale({10.0f, 0.01f, 10.0f});
+
 		while (!win.should_close()) {
-//			cube_obj.rotate({0.0f, 1.0f, 0.0f}, 0.02);
+			cube_obj.rotate({0.0f, 1.0f, 0.0f}, 0.02);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			GL_CHECK(move(view_loc););
 
 			if (glGetError()) exit(1);
 
-			int location = glGetUniformLocation(shader.id(), TRANSFORM_UNIFORM);
-			GL_CHECK(glUniformMatrix4fv(location, 1, GL_TRUE, Mat4().ptr()););
 			array_buffer.bind();
-			aaa.bind();
-			ibo.bind();
-			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
-//			cube_obj.draw();
-//			plane_obj.draw();
+			cube_obj.draw();
+			plane_obj.draw();
 
 			win.swap_buffers();
 			Window::poll_events();
