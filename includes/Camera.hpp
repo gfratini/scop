@@ -10,7 +10,7 @@
 class Camera {
 private:
 	const Vec3	up = {0.0f, 1.0f, 0.0f};
-	const float speed = 0.01;
+	const float speed = 0.02;
 	Vec3		position;
 	Vec3		_front;
 	Vec3		target;

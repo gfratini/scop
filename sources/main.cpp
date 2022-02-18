@@ -1,6 +1,6 @@
 #include "main.hpp"
 
-Camera	camera({0.0, -0.5, 3});
+Camera	camera({0.0, -5, 20});
 
 int		m_left = 0;
 int		m_up = 0;
@@ -130,12 +130,13 @@ int main()
 		Object	cube_obj(shader, vbo, "assets/textures/container.jpg", GL_TEXTURE0);
 
 		float i = 0;
+		float j = 0;
 		while (!win.should_close()) {
 			plane_obj.rotate({1.0f, 0.0f, 0.0f}, 90);
-			plane_obj.scale({10.0f, 10.0f, 10.0f});
+			plane_obj.scale({20.0f, 20.0f, 20.0f});
 			cube_obj.rotate({0.0f, 1.0f, 0.0f}, i);
 			cube_obj.scale({10.0f, 10.0f, 1.0f});
-			cube_obj.translate({0.0f, 0.5f, 0.0f});
+			cube_obj.translate({0.0f, 0.6f + (sinf(j) / 10.0f), 0.0f});
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			GL_CHECK(move(view_loc););
@@ -150,6 +151,8 @@ int main()
 			Window::poll_events();
 			i += 0.1;
 			if (i >= 360) i = 0;
+			j += 0.002;
+			if (j >=360) j = 0;
 		}
 	} catch (const std::exception& e) {
 		std::cout << e.what() << std::endl;
