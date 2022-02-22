@@ -121,9 +121,11 @@ int main()
 			1, 2, 3
 		};
 
+
 		ShaderProgram		shader("shaders/vertex.glsl", "shaders/fragment.glsl");
 		shader.use();
 
+		Object obj(shader, "assets/objects/untitled.obj", "assets/textures/wall.jpg", GL_TEXTURE0);
 		int perspective_loc = glGetUniformLocation(shader.id(), "perspective");
 		int view_loc = glGetUniformLocation(shader.id(), "view");
 
@@ -145,9 +147,9 @@ int main()
 		while (!win.should_close()) {
 			plane_obj.rotate({1.0f, 0.0f, 0.0f}, 90);
 			plane_obj.scale({20.0f, 20.0f, 20.0f});
-			cube_obj.rotate({0.0f, 1.0f, 0.0f}, i);
-			cube_obj.scale({10.0f, 10.0f, 1.0f});
-			cube_obj.translate({0.0f, 0.6f + (sinf(j) / 10.0f), 0.0f});
+			obj.rotate({0.0f, 1.0f, 0.0f}, i);
+			obj.scale({10.0f, 10.0f, 1.0f});
+			obj.translate({0.0f, 0.6f + (sinf(j) / 10.0f), 0.0f});
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			GL_CHECK(move(view_loc););
@@ -155,8 +157,10 @@ int main()
 			if (glGetError()) exit(1);
 
 			array_buffer.bind();
-			cube_obj.draw();
+//			cube_obj.draw();
 			plane_obj.draw();
+
+			obj.draw();
 
 			win.swap_buffers();
 			Window::poll_events();

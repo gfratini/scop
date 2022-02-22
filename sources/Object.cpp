@@ -62,7 +62,7 @@ Object::Object(const ShaderProgram &shader, const std::string &obj_file, const s
 
 	_vertex_buffer = buffers.first;
 	_index_buffer = buffers.second;
-	_use_ibo = true;
+	_use_ibo = false;
 }
 
 const ShaderProgram &Object::shader() const {

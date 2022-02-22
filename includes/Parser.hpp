@@ -6,7 +6,8 @@
 #define SCOP_CPP_PARSER_HPP
 
 #include <vector>
-class Object;
+#include "VertexBuffer.hpp"
+#include "IndexBuffer.hpp"
 
 struct coordinates {
 	float x = 0.0f;
@@ -36,9 +37,9 @@ private:
 	std::vector<unsigned int>		ibo;
 
 public:
-	Object	parse(const std::string& file);
+	std::pair<VertexBuffer, IndexBuffer>	parse(const std::string& file);
+
 };
 
-#include "Object.hpp"
 
 #endif //SCOP_CPP_PARSER_HPP
