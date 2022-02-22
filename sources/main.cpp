@@ -135,7 +135,7 @@ int main()
 		glUniformMatrix4fv(view_loc, 1, GL_TRUE, camera.view().ptr());
 
 		VertexBuffer	aaa(vertices, 4, GL_STATIC_DRAW);
-		Object	plane_obj(shader, aaa, ibo, "assets/textures/slaveeni.png", GL_TEXTURE0);
+		Object	plane_obj(shader, aaa, ibo, "assets/textures/wall.jpg", GL_TEXTURE0);
 
 		VertexBuffer	vbo(cube, 36, GL_STATIC_DRAW);
 		Object	cube_obj(shader, vbo, "assets/textures/container.jpg", GL_TEXTURE0);

@@ -1,5 +1,7 @@
 # Makefile """"inspired"""" by Ciro Seraponte (siraponte on github)
 
+SET_TEST = $(eval CXXFLAGS += $(TEST_FLAGS))
+
 NAME =		scop
 
 CXX = 		clang++
@@ -15,6 +17,8 @@ RM =		rm -rf
 SRCDIR = 	./sources
 INCDIR = 	./includes
 OBJDIR =  	./.obj
+
+TEST_FLAGS = -DTEST_PARSE
 
 FILES =		main.cpp \
 			Window.cpp \
@@ -41,6 +45,13 @@ $(NAME): $(OBJS)
 
 install:
 	$(shell sh tools/install.sh)
+
+help:
+	$(SET_TEST)
+
+test: help all
+
+test_re: help re
 
 clean:
 	@$(RM) $(OBJDIR)
