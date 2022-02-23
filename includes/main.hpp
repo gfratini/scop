@@ -25,5 +25,6 @@
 #include "Camera.hpp"
 #include "Object.hpp"
 #include "utils.hpp"
+#include "Scene.hpp"
 
 #endif //SCOP_CPP_MAIN_HPP

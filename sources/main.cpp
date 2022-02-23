@@ -86,9 +86,7 @@ int main()
 		glUniformMatrix4fv(perspective_loc, 1, GL_TRUE, p.ptr());
 		glUniformMatrix4fv(view_loc, 1, GL_TRUE, camera.view().ptr());
 
-		auto a = Parser().parse("assets/resources/chess_board.obj").first;
-
-		Object obj(shader, a, "assets/textures/wall.jpg", GL_TEXTURE0);
+		Scene scene("assets/resources/iphone.obj", shader);
 
 		float i = 0;
 		float j = 0;
@@ -100,7 +98,7 @@ int main()
 			if (glGetError()) exit(1);
 
 			array_buffer.bind();
-			obj.draw();
+			scene.render();
 
 			win.swap_buffers();
 			Window::poll_events();

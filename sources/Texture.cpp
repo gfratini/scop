@@ -38,7 +38,7 @@ Texture::Texture(const std::string& file, GLenum unit)
 }
 
 Texture::~Texture() {
-	glDeleteTextures(1, &texture_id);
+//	glDeleteTextures(1, &texture_id);
 }
 
 void	Texture::bind(const ShaderProgram& s) {

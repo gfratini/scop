@@ -24,7 +24,7 @@ ShaderProgram::ShaderProgram(const std::string &vs_file, const std::string &fs_f
 }
 
 ShaderProgram::~ShaderProgram() {
-	glDeleteProgram(program_id);
+//	glDeleteProgram(program_id);
 }
 
 unsigned int ShaderProgram::create_shader(const std::string &file, GLenum type) {

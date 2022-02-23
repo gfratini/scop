@@ -7,6 +7,10 @@
 #include <sstream>
 #include <cstdio>
 
+Parser::Parser(const ShaderProgram &shader)
+		:  shader(shader)
+{ }
+
 std::vector<std::string>	split(const std::string& s, char c) {
 	std::string tmp(s);
 	std::vector<std::string> v;
@@ -54,77 +58,73 @@ void triangulate(std::vector<unsigned int>& vec) {
 }
 
 std::vector<unsigned int>	parse_face(const std::string& s) {
-	const char *ptr = s.c_str();
 	unsigned int	vc, tc;
 	std::vector<unsigned int> v;
 	auto a = split(s, ' ');
 
 	for (auto it = a.begin(); it != a.end(); ++it) {
 		auto tmp = split(*it, '/');
-		vc = atoi(tmp[0].c_str()) - 1;
-		v.push_back(vc);
+		if (tmp[0].length()) {
+			vc = atoi(tmp[0].c_str());
+			if (vc)
+				v.push_back(vc - 1);
+		}
 	}
 
 	triangulate(v);
 	return v;
 }
 
-void fix_tex(std::vector<coordinates>& c, std::vector<tex_coordinates> &t, const std::vector<unsigned int> &i) {
-	std::vector<tex_coordinates> vec_t;
+std::vector<coordinates> fix_tex(const std::vector<coordinates>& c, const std::vector<unsigned int> &i) {
 	std::vector<coordinates>	vec_c;
 
 	for (auto it = i.begin(); it != i.end(); ++it) {
 		vec_c.push_back(c[*it]);
 	}
-	c = vec_c;
+	return vec_c;
+}
+
+VertexBuffer parse2(std::ifstream& file, std::vector<coordinates>& c) {
+	std::string					line;
+	std::vector<unsigned int>	i;
+	bool						faces = false;
+	std::vector<float>	vertices;
+
+	while (std::getline(file, line)) {
+		if (faces && line.find("f ") != 0) break;
+		if (line.find("v ") == 0) {
+			c.push_back(parse3f(line));
+		} else if (line.find("f ") == 0) {
+			faces = true;
+			auto tmp = parse_face(line.substr(2));
+			i.insert(i.end(), tmp.begin(), tmp.end());
+		}
+	}
+
+	std::cout << i.size() << "  " << c.size() << std::endl;
+	auto fixed = fix_tex(c, i);
+
+	for (unsigned int i = 0; i < fixed.size(); ++i) {
+		vertices.push_back(fixed[i].x);
+		vertices.push_back(fixed[i].y);
+		vertices.push_back(fixed[i].z);
+		vertices.push_back(0);
+		vertices.push_back(0);
+	}
+
+	return {vertices.data(), (unsigned int)vertices.size() / 5, GL_STATIC_DRAW};
 }
 
 
-std::pair<VertexBuffer, IndexBuffer> Parser::parse(const std::string &file) {
+std::vector<Object> Parser::parse(const std::string &file) {
 	std::ifstream		f(file);
-	std::string			line;
-	std::vector<coordinates>		c;
-	std::vector<tex_coordinates>	t;
-	std::vector<unsigned int> i;
-
-	std::vector<float>	vertices;
+	std::vector<Object>	vec;
 
 	if (!f.is_open())
 		throw std::runtime_error(file + " not found");
 
-	while (std::getline(f, line)) {
-		if (line.find('#') == 0) {
-//			std::cout << "Commented Line" << "\t" << line << std::endl;
-		} else if (line.find("o ") == 0) {
-//			std::cout << "Object Name " << "\t" << line << std::endl;
-		} else if (line.find("v ") == 0) {
-			c.push_back(parse3f(line));
-//			std::cout << "Vertex Coords" << "\t" << line << std::endl;
-		} else if (line.find("vt ") == 0) {
-			t.push_back(parse2f(line));
-//			std::cout << "Texture Coords" << "\t" << line << std::endl;
-		} else if (line.find("vn ") == 0) {
-//			std::cout << "Vertex Normals" << "\t" << line << std::endl;
-		} else if (line.find("f ") == 0) {
-			auto tmp = parse_face(line.substr(2));
-			i.insert(i.end(), tmp.begin(), tmp.end());
-//			std::cout << "Face element" << "\t" << line << std::endl;
-		} else {
-//			std::cout << "Something Else" << "\t" << line << std::endl;
-		}
-	}
+	while (!f.eof())
+		vec.emplace_back(shader, parse2(f, coords), "assets/textures/wall.jpg", GL_TEXTURE0);
 
-	fix_tex(c, t, i);
-
-	for (unsigned int i = 0; i < c.size(); ++i) {
-		vertices.push_back(c[i].x);
-		vertices.push_back(c[i].y);
-		vertices.push_back(c[i].z);
-		vertices.push_back(0);
-		vertices.push_back(0);
-	}
-
-	std::cout << vertices.size();
-
-	return {VertexBuffer(vertices.data(), vertices.size() / 5, GL_STATIC_DRAW), IndexBuffer()};
+	return vec;
 }

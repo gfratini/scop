@@ -21,9 +21,15 @@ VertexBuffer::VertexBuffer(const float *vertices, const unsigned int num, GLenum
 	_num = num;
 	_buffer_id = 0;
 	glGenBuffers(1, &_buffer_id);
+	if (_buffer_id % 2 == 0) {
+		unsigned int tmp = _buffer_id;
+		glGenBuffers(1, &_buffer_id);
+		glDeleteBuffers(1, &tmp);
+	}
 	glBindBuffer(GL_ARRAY_BUFFER, _buffer_id);
 	glBufferData(GL_ARRAY_BUFFER, (sizeof(Vertex) * _num), vertices, usage);
 
+	std::cout << _buffer_id << std::endl;
 }
 
 void VertexBuffer::bind() const {

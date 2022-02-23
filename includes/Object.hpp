@@ -18,7 +18,7 @@ class Object {
 private:
 	ShaderProgram	_shader;
 	VertexBuffer	_vertex_buffer;
-	IndexBuffer		_index_buffer;
+//	IndexBuffer		_index_buffer;
 	Texture			_texture;
 	Mat4			_transform;
 	bool			_use_ibo;
@@ -26,10 +26,8 @@ public:
 	Object();
 	Object(const ShaderProgram& shader, const VertexBuffer& obj, const Texture& tex);
 	Object(const ShaderProgram& shader, const VertexBuffer& obj, const std::string& t_file, unsigned int pos);
-	Object(const ShaderProgram& shader, const VertexBuffer& obj, const IndexBuffer& ibo, const Texture& tex);
-	Object(const ShaderProgram& shader, const VertexBuffer& obj, const IndexBuffer& ibo, const std::string& t_file, unsigned int pos);
-	Object(const ShaderProgram& shader, const std::string& obj_file, const Texture& tex);
-	Object(const ShaderProgram& shader, const std::string& obj_file, const std::string& t_file, unsigned int pos);
+//	Object(const ShaderProgram& shader, const VertexBuffer& obj, const IndexBuffer& ibo, const Texture& tex);
+//	Object(const ShaderProgram& shader, const VertexBuffer& obj, const IndexBuffer& ibo, const std::string& t_file, unsigned int pos);
 	inline ~Object() = default;
 
 	const ShaderProgram& shader() const;
@@ -40,8 +38,6 @@ public:
 
 	const IndexBuffer& ibo() const;
 	void		 ibo(const IndexBuffer& ibo);
-
-	std::pair<VertexBuffer, IndexBuffer>	parse_file(const std::string& file);
 
 	const Texture& texture() const;
 	Texture& texture();

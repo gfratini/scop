@@ -8,6 +8,8 @@
 #include <vector>
 #include "VertexBuffer.hpp"
 #include "IndexBuffer.hpp"
+#include "ShaderProgram.hpp"
+class Object;
 
 struct coordinates {
 	float x = 0.0f;
@@ -32,14 +34,16 @@ struct vertex {
 class Parser {
 private:
 	std::vector<coordinates>		coords;
-	std::vector<tex_coordinates>	tex_coords;
+	ShaderProgram					shader;
 	std::vector<vertex>				vertices_vec;
 	std::vector<unsigned int>		ibo;
 
 public:
-	std::pair<VertexBuffer, IndexBuffer>	parse(const std::string& file);
+	Parser(const ShaderProgram& shader);
+	std::vector<Object> parse(const std::string& file);
 
 };
 
+#include "Object.hpp"
 
 #endif //SCOP_CPP_PARSER_HPP

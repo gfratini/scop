@@ -104,7 +104,7 @@ public:
 	}
 
 	~Mat4() {
-		delete[] mat;
+//		delete[] mat;
 	}
 
 	float	operator[](unsigned int i) const {
