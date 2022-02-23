@@ -14,7 +14,7 @@ VertexBuffer::VertexBuffer()
 }
 
 VertexBuffer::~VertexBuffer() {
-	glDeleteBuffers(1, &_buffer_id);
+//	glDeleteBuffers(1, &_buffer_id);
 }
 
 VertexBuffer::VertexBuffer(const float *vertices, const unsigned int num, GLenum usage) {

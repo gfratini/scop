@@ -51,7 +51,7 @@ Object::Object(const ShaderProgram &shader, const std::string &obj_file, const T
 
 	_vertex_buffer = buffers.first;
 	_index_buffer = buffers.second;
-	_use_ibo = true;
+	_use_ibo = false;
 }
 
 Object::Object(const ShaderProgram &shader, const std::string &obj_file, const std::string &t_file, unsigned int pos)
@@ -129,5 +129,5 @@ void Object::draw() {
 }
 
 std::pair<VertexBuffer, IndexBuffer> Object::parse_file(const std::string &file) {
-	return {VertexBuffer(), IndexBuffer()};
+	return Parser().parse(file);
 }

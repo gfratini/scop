@@ -9,6 +9,8 @@ int		m_down = 0;
 
 double		last_update = 0;
 
+GLenum render = GL_FILL;
+
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
 (void) window;
@@ -23,6 +25,11 @@ void	callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, 1);
+
+	if (key == 'T' && action == GLFW_PRESS) {
+		render = render == GL_FILL ? GL_LINE : GL_FILL;
+		glPolygonMode(GL_FRONT_AND_BACK, render);
+	}
 
 	if (key == 'W') m_up = val;
 	else if (key == 'S') m_down = val;
@@ -67,89 +74,25 @@ int main()
 			throw std::runtime_error("Could not initialize GLEW");
 
 		glEnable(GL_DEPTH_TEST);
-		float cube[] = {
-				-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-				0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-				0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-				0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-				-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-				-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-
-				-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-				0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-				0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-				0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-				-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-				-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-
-				-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-				-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-				-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-				-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-				-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-				-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-				0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-				0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-				0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-				0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-				0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-				0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-				-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-				0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-				0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-				0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-				-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-				-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-
-				-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-				0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-				0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-				0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-				-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-				-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
-		};
-		float vertices[] = {
-				0.5f,  0.5f, 0.0f,   1.0f, 1.0f,   // top right
-				0.5f, -0.5f, 0.0f,   1.0f, 0.0f,   // bottom right
-				-0.5f, -0.5f, 0.0f,   0.0f, 0.0f,   // bottom left
-				-0.5f,  0.5f, 0.0f,   0.0f, 1.0f    // top left
-		};
-		unsigned int indices[] = {
-			0, 1, 3,
-			1, 2, 3
-		};
-
-
 		ShaderProgram		shader("shaders/vertex.glsl", "shaders/fragment.glsl");
 		shader.use();
 
-		Object obj(shader, "assets/objects/untitled.obj", "assets/textures/wall.jpg", GL_TEXTURE0);
 		int perspective_loc = glGetUniformLocation(shader.id(), "perspective");
 		int view_loc = glGetUniformLocation(shader.id(), "view");
 
 		VertexArrayBuffer	array_buffer;
-		IndexBuffer		ibo(indices, 6, GL_STATIC_DRAW);
 
 		Mat4 		p = perspective(WIDTH, HEIGHT, 0.1, 1000, 60);
 		glUniformMatrix4fv(perspective_loc, 1, GL_TRUE, p.ptr());
 		glUniformMatrix4fv(view_loc, 1, GL_TRUE, camera.view().ptr());
 
-		VertexBuffer	aaa(vertices, 4, GL_STATIC_DRAW);
-		Object	plane_obj(shader, aaa, ibo, "assets/textures/wall.jpg", GL_TEXTURE0);
+		auto a = Parser().parse("assets/resources/chess_board.obj").first;
 
-		VertexBuffer	vbo(cube, 36, GL_STATIC_DRAW);
-		Object	cube_obj(shader, vbo, "assets/textures/container.jpg", GL_TEXTURE0);
+		Object obj(shader, a, "assets/textures/wall.jpg", GL_TEXTURE0);
 
 		float i = 0;
 		float j = 0;
 		while (!win.should_close()) {
-			plane_obj.rotate({1.0f, 0.0f, 0.0f}, 90);
-			plane_obj.scale({20.0f, 20.0f, 20.0f});
-			obj.rotate({0.0f, 1.0f, 0.0f}, i);
-			obj.scale({10.0f, 10.0f, 1.0f});
-			obj.translate({0.0f, 0.6f + (sinf(j) / 10.0f), 0.0f});
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			GL_CHECK(move(view_loc););
@@ -157,9 +100,6 @@ int main()
 			if (glGetError()) exit(1);
 
 			array_buffer.bind();
-//			cube_obj.draw();
-			plane_obj.draw();
-
 			obj.draw();
 
 			win.swap_buffers();

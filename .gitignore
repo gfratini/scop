@@ -10,7 +10,7 @@
 *.slo
 *.lo
 *.o
-*.obj
+.obj
 
 # Precompiled Headers
 *.gch
@@ -116,3 +116,5 @@ $RECYCLE.BIN/
 scop
 includes/GL
 includes/GLFW
+
+!assets/*
