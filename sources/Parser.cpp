@@ -7,8 +7,7 @@
 #include <sstream>
 #include <cstdio>
 
-Parser::Parser(const ShaderProgram &shader)
-		:  shader(shader)
+Parser::Parser()
 { }
 
 std::vector<std::string>	split(const std::string& s, char c) {
@@ -124,7 +123,7 @@ std::vector<Object> Parser::parse(const std::string &file) {
 		throw std::runtime_error(file + " not found");
 
 	while (!f.eof())
-		vec.emplace_back(shader, parse2(f, coords), "assets/textures/wall.jpg", GL_TEXTURE0);
+		vec.push_back(Object(parse2(f, coords), "assets/textures/wall.jpg", GL_TEXTURE0));
 
 	return vec;
 }

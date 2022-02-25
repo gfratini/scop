@@ -18,16 +18,13 @@ class Object {
 private:
 	ShaderProgram	_shader;
 	VertexBuffer	_vertex_buffer;
-//	IndexBuffer		_index_buffer;
 	Texture			_texture;
 	Mat4			_transform;
 	bool			_use_ibo;
 public:
 	Object();
-	Object(const ShaderProgram& shader, const VertexBuffer& obj, const Texture& tex);
-	Object(const ShaderProgram& shader, const VertexBuffer& obj, const std::string& t_file, unsigned int pos);
-//	Object(const ShaderProgram& shader, const VertexBuffer& obj, const IndexBuffer& ibo, const Texture& tex);
-//	Object(const ShaderProgram& shader, const VertexBuffer& obj, const IndexBuffer& ibo, const std::string& t_file, unsigned int pos);
+	Object(const VertexBuffer& obj, const Texture& tex);
+	Object(const VertexBuffer& obj, const std::string& t_file, unsigned int pos);
 	inline ~Object() = default;
 
 	const ShaderProgram& shader() const;
@@ -36,9 +33,6 @@ public:
 	const VertexBuffer& vbo() const;
 	VertexBuffer& vbo();
 
-	const IndexBuffer& ibo() const;
-	void		 ibo(const IndexBuffer& ibo);
-
 	const Texture& texture() const;
 	Texture& texture();
 
@@ -46,7 +40,7 @@ public:
 	void	translate(const Vec3& vec);
 	void	rotate(const Vec3& plane, float angle);
 
-	void	draw();
+	void	draw(const ShaderProgram& s);
 };
 
 

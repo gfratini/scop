@@ -34,12 +34,11 @@ struct vertex {
 class Parser {
 private:
 	std::vector<coordinates>		coords;
-	ShaderProgram					shader;
 	std::vector<vertex>				vertices_vec;
 	std::vector<unsigned int>		ibo;
 
 public:
-	Parser(const ShaderProgram& shader);
+	Parser();
 	std::vector<Object> parse(const std::string& file);
 
 };

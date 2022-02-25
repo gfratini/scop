@@ -20,7 +20,7 @@ public:
 	unsigned int id() const;
 
 	void	create(const std::string& vs_file, const std::string& fs_file);
-	void	use() const;
+	void	use(unsigned int& id) const;
 	void	send_texture(unsigned int uniform, unsigned int num) const;
 };
 

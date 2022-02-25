@@ -48,7 +48,7 @@ void Camera::look(double xpos, double ypos) {
 	_front = normalize(direction);
 }
 
-void Camera::move(int front, int back, int right, int left) {
+void Camera::move(int front, int back, int right, int left, int run) {
 	if (left && !right) {
 		Vec3 v = normalize(cross(up, _front)) * speed;
 		position -= v;
@@ -57,7 +57,10 @@ void Camera::move(int front, int back, int right, int left) {
 		position += v;
 	}
 	if (front && !back) {
-		Vec3 v = _front * speed;
+		float mod_speed = speed;
+		if (run)
+			mod_speed *= 2.5;
+		Vec3 v = _front * mod_speed;
 		position += v;
 	} else if (back && !front) {
 		Vec3 v = _front * speed;

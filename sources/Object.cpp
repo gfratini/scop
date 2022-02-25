@@ -8,17 +8,15 @@ Object::Object() {
 	_use_ibo = false;
 }
 
-Object::Object(const ShaderProgram &shader, const VertexBuffer &obj, const Texture& tex)
- :  _shader(shader),
- 	_vertex_buffer(obj),
+Object::Object(const VertexBuffer &obj, const Texture& tex)
+ :  _vertex_buffer(obj),
 	_texture(tex)
 {
 	_use_ibo = false;
 }
 
-Object::Object(const ShaderProgram &shader, const VertexBuffer &obj, const std::string &t_file, unsigned int pos)
-:  _shader(shader),
-   _vertex_buffer(obj),
+Object::Object(const VertexBuffer &obj, const std::string &t_file, unsigned int pos)
+:  _vertex_buffer(obj),
    _texture(t_file, pos)
 {
 	_use_ibo = false;
@@ -61,13 +59,12 @@ void Object::rotate(const Vec3 &plane, float angle) {
 	_transform.rotate(plane, rad(angle));
 }
 
-void Object::draw() {
-	GL_CHECK(_shader.use(););
+void Object::draw(const ShaderProgram& s) {
 	GL_CHECK(_vertex_buffer.bind(););
 	Vertex::set_attrib_pointer();
-	GL_CHECK(_texture.bind(_shader););
+	GL_CHECK(_texture.bind(s););
 
-	int location = glGetUniformLocation(_shader.id(), TRANSFORM_UNIFORM);
+	int location = glGetUniformLocation(s.id(), TRANSFORM_UNIFORM);
 	GL_CHECK(glUniformMatrix4fv(location, 1, GL_TRUE, _transform.ptr()););
 
 	GL_CHECK(glDrawArrays(GL_TRIANGLES, 0, _vertex_buffer.len()););

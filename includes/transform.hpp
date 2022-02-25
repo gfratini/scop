@@ -8,6 +8,7 @@
 #include <memory>
 #include <cmath>
 #include <iostream>
+#include <cstdlib>
 
 inline float rad(float deg) { return deg * (float)(3.141592/180.0); }
 
@@ -34,50 +35,51 @@ T	cross(T vec1, T vec2) {
 class Vec3 {
 	float* vec;
 public:
-	Vec3(float x, float y, float z) {
-		vec = new float[3];
+	inline Vec3(float x, float y, float z) : vec(new float[3]) {
 		vec[0] = x;
 		vec[1] = y;
 		vec[2] = z;
 	}
-	Vec3() {
-		vec = new float[3];
+	inline Vec3() : vec(new float[3]) {
 		vec[0] = 0;
 		vec[1] = 0;
 		vec[2] = 0;
 	}
+	inline ~Vec3() {
+//		delete[] vec;
+	}
 
-	float x() const {return vec[0]; }
-	float y() const {return vec[1]; }
-	float z() const {return vec[2]; }
+	inline float x() const {return vec[0]; }
+	inline float y() const {return vec[1]; }
+	inline float z() const {return vec[2]; }
 
-	float& x() {return vec[0]; }
-	float& y() {return vec[1]; }
-	float& z() {return vec[2]; }
+	inline float& x() {return vec[0]; }
+	inline float& y() {return vec[1]; }
+	inline float& z() {return vec[2]; }
 
-	Vec3(const Vec3& v) : Vec3() { *this = v; }
+	inline Vec3(const Vec3& v) : Vec3() { *this = v; }
 
-	Vec3&	operator=(const Vec3& v) {
+	inline Vec3&	operator=(const Vec3& v) {
 		if (this != &v)
 			memmove(vec, v.vec, 4 * sizeof(float));
 		return *this;
 	}
 
-	Vec3	operator*(float f) {
+	inline Vec3	operator*(float f) {
 		return {x() * f, y() * f, z() * f};
 	}
 
-	Vec3	operator+(const Vec3& v) const {
+	inline Vec3	operator+(const Vec3& v) const {
 		return {x() + v.x(), y() + v.y(), z() + v.z()};
 	}
-	Vec3	operator-(const Vec3& v) const {
+	inline Vec3	operator-(const Vec3& v) const {
 		return {x() - v.x(), y() - v.y(), z() - v.z()};
 	}
-	Vec3	operator+=(const Vec3& v) {
+	inline Vec3	operator+=(const Vec3& v) {
 		*this = *this + v;
 		return *this;
 	}
-	Vec3	operator-=(const Vec3& v) {
+	inline Vec3	operator-=(const Vec3& v) {
 		*this = *this - v;
 		return *this;
 	}
@@ -86,40 +88,49 @@ public:
 
 class Mat4 {
 private:
+	typedef std::allocator<float> allocator;
+//	static const std::allocator<float> allocator = std::allocator<float>();
 	static const unsigned int mat_len = 4;
 	float* mat;
 
 public:
-	explicit Mat4(float* mat): mat(mat) {}
+	inline explicit Mat4(float* matrix) {
+		mat = (float*)malloc(16 * sizeof(float));
+		for (int i = 0; i < 16; ++i)
+			mat[i] = matrix[i];
+	}
 
-	Mat4() {
+	inline Mat4() {
 		float tmp[] = {
 			1.0, 0.0, 0.0, 0.0,
 			0.0, 1.0, 0.0, 0.0,
 			0.0, 0.0, 1.0, 0.0,
 			0.0, 0.0, 0.0, 1.0
 		};
-		mat = new float[16];
-		memmove(mat, tmp, 16 * sizeof(float));
+		mat = (float*)malloc(16 * sizeof(float));
+		for (int i = 0; i < 16; ++i)
+			mat[i] = tmp[i];
 	}
 
-	~Mat4() {
-//		delete[] mat;
+	inline ~Mat4() {
+		if (mat)
+			free(mat);
+		mat = NULL;
 	}
 
-	float	operator[](unsigned int i) const {
+	inline float	operator[](unsigned int i) const {
 		return mat[i];
 	}
 
-	float&	operator[](unsigned int i) {
+	inline float&	operator[](unsigned int i) {
 		return mat[i];
 	}
 
-	const float * ptr() {
+	inline const float * ptr() {
 		return mat;
 	}
 
-	Mat4	operator*(const Mat4& m) {
+	inline Mat4	operator*(const Mat4& m) {
 		auto C = new float[mat_len*mat_len];
 		int col;
 		for (unsigned int k = 0; k < mat_len; k++) {
@@ -135,18 +146,20 @@ public:
 		return (Mat4(C));
 	}
 
-	Mat4&    operator=(const Mat4& m) {
+	inline Mat4&    operator=(const Mat4& m) {
 		if (this != &m)
-			memmove(mat, m.mat, 16 * sizeof(float));
+			for (int i = 0; i < 16; ++i)
+				mat[i] = m[i];
 		return *this;
 	}
 
-	Mat4&    operator=(const float * f) {
-		memmove(mat, f, 16 * sizeof(float));
+	inline Mat4&    operator=(const float * f) {
+		for (int i = 0; i < 16; ++i)
+			mat[i] = f[i];
 		return *this;
 	}
 
-	void	scale(const Vec3 & v) {
+	inline void	scale(const Vec3 & v) {
 		Mat4 m;
 
 		m[0] = v.x();
@@ -156,7 +169,7 @@ public:
 		*this = *this * m;
 	}
 
-	void	scale(const float * v) {
+	inline void	scale(const float * v) {
 		Mat4 m;
 
 		m[0] = v[0];
@@ -165,7 +178,7 @@ public:
 
 		*this = *this * m;
 	}
-	void	translate(const Vec3 & v) {
+	inline void	translate(const Vec3 & v) {
 		Mat4 m;
 
 		m[3] = v.x();
@@ -175,7 +188,7 @@ public:
 		*this = *this * m;
 	}
 
-	void	translate(const float * v) {
+	inline void	translate(const float * v) {
 		Mat4 m;
 
 		m[3] = v[0];
@@ -184,29 +197,25 @@ public:
 		*this = *this * m;
 	}
 
-	void	rotate(const float * v, float angle) {
-		float * f = std::allocator<float>().allocate(16);
+	inline void	rotate(const float * v, float angle) {
 
 		float x = v[0];
 		float y = v[1];
 		float z = v[2];
 		float c = cosf(angle);
 		float s = sinf(angle);
-		const float tmp[] = {
+		float tmp[] = {
 				c + x * x * (1.0f - c), x * y * (1.0f - c) - z * s, x * z * (1.0f - c) + y * s, 0.0f,
 				y * x * (1.0f - c) + z * s, c + y * y * (1.0f - c), y * z * (1.0f - c) - x * s, 0.0f,
 				z * x * (1.0f - c) - y * s, z * y * (1.0f - c) + x * s, c + z * z * (1.0f - c), 0.0f,
 				0.0, 0.0, 0.0, 1.0f
 		};
-		memmove(f, tmp, 16 * sizeof(float));
 
-		Mat4 m(f);
+		Mat4 m(tmp);
 		*this = *this * m;
 	}
 
-	void	rotate(const Vec3 & v, float angle) {
-		auto f = new float[16];
-
+	inline void	rotate(const Vec3 & v, float angle) {
 		float x = v.x();
 		float y = v.y();
 		float z = v.z();
@@ -218,9 +227,8 @@ public:
 				z * x * (1.0f - c) - y * s, z * y * (1.0f - c) + x * s, c + z * z * (1.0f - c), 0.0f,
 				0.0, 0.0, 0.0, 1.0f
 		};
-		memmove(f, tmp, 16 * sizeof(float));
 
-		Mat4 m(f);
+		Mat4 m(tmp);
 		*this = *this * m;
 	}
 	friend std::ostream& operator<<(std::ostream& os, const Mat4& m);
@@ -230,16 +238,13 @@ inline Mat4 perspective(float w, float h, float z_near, float  z_far, float fov)
 	const float z_range = z_near - z_far;
 	const float tan_fov = tanf(rad(fov / 2.0f));
 
-	auto f = new float[16];
-
 	float tmp[] = {
 			1.0f / (tan_fov * ar), 0.0f, 0.0f, 0.0f,
 			0.0f, 1.0f / tan_fov, 0.0f, 0.0f,
 			0.0f, 0.0f, (-z_near - z_far) / z_range, 2.0f * z_far * z_near / z_range,
 			0.0f, 0.0f, 1.0f, 0.0f
 	};
-	memmove(f, tmp, 16 * sizeof(float));
-	return Mat4(f);
+	return Mat4(tmp);
 }
 
 inline Mat4 look_at(const Vec3& from, const Vec3& to, const Vec3& up) {
@@ -252,8 +257,7 @@ inline Mat4 look_at(const Vec3& from, const Vec3& to, const Vec3& up) {
 		d.x(), d.y(), d.z(), 0.0f,
 		0.0f, 0.0f, 0.0f, 1.0f
 	};
-	Mat4	m1;
-	m1 = f;
+	Mat4	m1(f);
 	Mat4	m2;
 	m2[3] = from.x();
 	m2[7] = from.y();

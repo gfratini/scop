@@ -58,8 +58,9 @@ unsigned int ShaderProgram::id() const {
 	return program_id;
 }
 
-void ShaderProgram::use() const {
+void ShaderProgram::use(unsigned int& id) const {
 	glUseProgram(program_id);
+	id = program_id;
 }
 
 void ShaderProgram::send_texture(unsigned int uniform, unsigned int num) const {

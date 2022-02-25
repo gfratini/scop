@@ -25,7 +25,7 @@ public:
 	~Camera();
 
 	void	look(double xpos, double ypos);
-	void	move(int front, int back, int right, int left);
+	void	move(int front, int back, int right, int left, int run);
 	Mat4	view() const;
 };
 

@@ -24,6 +24,7 @@ public:
 
 	void	create(const std::string& file, GLenum unit);
 	void	bind(const ShaderProgram& s);
+	inline GLenum	pos() { return _pos; }
 };
 
 #endif //SCOP_CPP_TEXTURE_HPP

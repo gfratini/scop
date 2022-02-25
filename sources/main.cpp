@@ -7,9 +7,13 @@ int		m_up = 0;
 int		m_right = 0;
 int		m_down = 0;
 
+int		run = 0;
+
 double		last_update = 0;
 
 GLenum render = GL_FILL;
+
+static unsigned int shader_id;
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
@@ -28,6 +32,8 @@ void	callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 
 	if (key == 'T' && action == GLFW_PRESS) {
 		render = render == GL_FILL ? GL_LINE : GL_FILL;
+		int loc = glGetUniformLocation(shader_id, "isWireframe");
+		glUniform1i(loc, render == GL_FILL ? 0 : 1);
 		glPolygonMode(GL_FRONT_AND_BACK, render);
 	}
 
@@ -35,6 +41,8 @@ void	callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	else if (key == 'S') m_down = val;
 	else if (key == 'A') m_left = val;
 	else if (key == 'D') m_right = val;
+	else if (key == GLFW_KEY_LEFT_SHIFT && action == GLFW_PRESS) run = 1;
+	else if (key == GLFW_KEY_LEFT_SHIFT && action == GLFW_RELEASE) run = 0;
 }
 
 void move(int view_loc) {
@@ -42,7 +50,7 @@ void move(int view_loc) {
 
 	if (new_time - last_update >= MIN_UPDATE_TIME) {
 		last_update = new_time;
-		camera.move(m_up, m_down, m_right, m_left);
+		camera.move(m_up, m_down, m_right, m_left, run);
 		glUniformMatrix4fv(view_loc, 1, GL_TRUE, camera.view().ptr());
 	}
 }
@@ -75,7 +83,7 @@ int main()
 
 		glEnable(GL_DEPTH_TEST);
 		ShaderProgram		shader("shaders/vertex.glsl", "shaders/fragment.glsl");
-		shader.use();
+		shader.use(shader_id);
 
 		int perspective_loc = glGetUniformLocation(shader.id(), "perspective");
 		int view_loc = glGetUniformLocation(shader.id(), "view");
@@ -86,7 +94,7 @@ int main()
 		glUniformMatrix4fv(perspective_loc, 1, GL_TRUE, p.ptr());
 		glUniformMatrix4fv(view_loc, 1, GL_TRUE, camera.view().ptr());
 
-		Scene scene("assets/resources/iphone.obj", shader);
+		Scene scene("assets/resources/chess_board.obj");
 
 		float i = 0;
 		float j = 0;
@@ -98,7 +106,8 @@ int main()
 			if (glGetError()) exit(1);
 
 			array_buffer.bind();
-			scene.render();
+			shader.use(shader_id);
+			scene.render(shader);
 
 			win.swap_buffers();
 			Window::poll_events();
