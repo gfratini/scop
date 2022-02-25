@@ -26,7 +26,8 @@ struct Vertex {
 
 class VertexBuffer {
 private:
-	static const unsigned int VERTEX_SIZE = 5;
+	static const unsigned int VERTEX_LEN = 5;
+	static const unsigned int VERTEX_SIZE = 5 * sizeof(float);
 	unsigned int	_buffer_id;
 	unsigned int 	_num;
 	float*			_vertices;

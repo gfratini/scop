@@ -9,6 +9,8 @@ int		m_down = 0;
 
 int		run = 0;
 
+int		light = 0;
+
 double		last_update = 0;
 
 GLenum render = GL_FILL;
@@ -33,8 +35,17 @@ void	callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	if (key == 'T' && action == GLFW_PRESS) {
 		render = render == GL_FILL ? GL_LINE : GL_FILL;
 		int loc = glGetUniformLocation(shader_id, "isWireframe");
-		glUniform1i(loc, render == GL_FILL ? 0 : 1);
+		if (render == GL_LINE)
+			glUniform1i(loc, 1);
+		else
+			glUniform1i(loc, light);
 		glPolygonMode(GL_FRONT_AND_BACK, render);
+	}
+
+	if (key == 'L' && action == GLFW_PRESS && render == GL_FILL) {
+		light = !light;
+		int loc = glGetUniformLocation(shader_id, "isWireframe");
+		glUniform1i(loc, light);
 	}
 
 	if (key == 'W') m_up = val;
@@ -55,19 +66,12 @@ void move(int view_loc) {
 	}
 }
 
-
-#ifdef TEST_PARSE
-
-int main() {
-	Parser p;
-
-	p.parse("assets/objects/untitled.obj");
-}
-
-#else
-
-int main()
+int main(int argc, const char ** argv)
 {
+	if (argc != 2) {
+		std::cout << "Invalid arguments, please provide a .obj file to render!";
+		exit(1);
+	}
 	const unsigned int WIDTH = 1920;
 	const unsigned int HEIGHT = 1080;
 	int	exit_status = 0;
@@ -94,7 +98,7 @@ int main()
 		glUniformMatrix4fv(perspective_loc, 1, GL_TRUE, p.ptr());
 		glUniformMatrix4fv(view_loc, 1, GL_TRUE, camera.view().ptr());
 
-		Scene scene("assets/resources/iphone.obj");
+		Scene scene(argv[1]);
 
 		float i = 0;
 		float j = 0;
@@ -123,5 +127,3 @@ int main()
 	glfwTerminate();
     return exit_status;
 }
-
-#endif

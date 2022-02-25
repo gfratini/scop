@@ -102,12 +102,19 @@ VertexBuffer parse2(std::ifstream& file, std::vector<coordinates>& c) {
 
 	auto fixed = fix_tex(c, i);
 
+	int left_down = 0;
+
+	for (int j = 0; j < fixed.size(); ++j) {
+		if (fixed[j].x < fixed[left_down].x && fixed[j].y < fixed[left_down].y && fixed[j].z < fixed[left_down].z)
+			left_down = j;
+	}
+
 	for (unsigned int i = 0; i < fixed.size(); ++i) {
 		vertices.push_back(fixed[i].x);
 		vertices.push_back(fixed[i].y);
 		vertices.push_back(fixed[i].z);
-		vertices.push_back(0);
-		vertices.push_back(0);
+		vertices.push_back(fixed[i].x - fixed[left_down].x);
+		vertices.push_back(fixed[i].y - fixed[left_down].y);
 	}
 
 	return {vertices.data(), (unsigned int)vertices.size() / 5, GL_STATIC_DRAW};
@@ -122,7 +129,7 @@ std::vector<Object> Parser::parse(const std::string &file) {
 		throw std::runtime_error(file + " not found");
 
 	while (!f.eof())
-		vec.emplace_back(parse2(f, coords), "assets/textures/wall.jpg", GL_TEXTURE0);
+		vec.emplace_back(parse2(f, coords), "assets/textures/salveenee.jpg", GL_TEXTURE0);
 
 	return vec;
 }

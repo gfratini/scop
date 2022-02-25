@@ -22,7 +22,6 @@ private:
 	Mat4			_transform;
 	bool			_use_ibo;
 public:
-	Object();
 	Object(const VertexBuffer& obj, const Texture& tex);
 	Object(const VertexBuffer& obj, const std::string& t_file, unsigned int pos);
 	inline ~Object() = default;

@@ -9,6 +9,7 @@
 #include "Object.hpp"
 class Scene {
 private:
+	float rot;
 	std::vector<Object>	objects;
 
 public:
