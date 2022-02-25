@@ -46,7 +46,13 @@ public:
 		vec[2] = 0;
 	}
 	inline ~Vec3() {
-//		delete[] vec;
+		delete[] vec;
+	}
+
+	inline Vec3(const Vec3& v) : vec(new float[3]) {
+		x() = v.x();
+		y() = v.y();
+		z() = v.z();
 	}
 
 	inline float x() const {return vec[0]; }
@@ -57,11 +63,9 @@ public:
 	inline float& y() {return vec[1]; }
 	inline float& z() {return vec[2]; }
 
-	inline Vec3(const Vec3& v) : Vec3() { *this = v; }
-
 	inline Vec3&	operator=(const Vec3& v) {
 		if (this != &v)
-			memmove(vec, v.vec, 4 * sizeof(float));
+			memmove(vec, v.vec, 3 * sizeof(float));
 		return *this;
 	}
 
@@ -88,16 +92,24 @@ public:
 
 class Mat4 {
 private:
-	typedef std::allocator<float> allocator;
-//	static const std::allocator<float> allocator = std::allocator<float>();
 	static const unsigned int mat_len = 4;
 	float* mat;
 
 public:
 	inline explicit Mat4(float* matrix) {
-		mat = (float*)malloc(16 * sizeof(float));
+		mat = new float[16];
+		if (!mat)
+			throw std::runtime_error("Error: allocation failed");
 		for (int i = 0; i < 16; ++i)
 			mat[i] = matrix[i];
+	}
+
+	inline Mat4(const Mat4& m) {
+		mat = new float[16];
+		if (!mat)
+			throw std::runtime_error("Error: allocation failed");
+		for (int i = 0; i < 16; ++i)
+			mat[i] = m[i];
 	}
 
 	inline Mat4() {
@@ -107,15 +119,15 @@ public:
 			0.0, 0.0, 1.0, 0.0,
 			0.0, 0.0, 0.0, 1.0
 		};
-		mat = (float*)malloc(16 * sizeof(float));
+		mat = new float[16];
+		if (!mat)
+			throw std::runtime_error("Error: allocation failed");
 		for (int i = 0; i < 16; ++i)
 			mat[i] = tmp[i];
 	}
 
 	inline ~Mat4() {
-		if (mat)
-			free(mat);
-		mat = NULL;
+		delete[] mat;
 	}
 
 	inline float	operator[](unsigned int i) const {

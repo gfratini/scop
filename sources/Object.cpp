@@ -38,7 +38,6 @@ VertexBuffer &Object::vbo() {
 	return _vertex_buffer;
 }
 
-
 const Texture &Object::texture() const {
 	return _texture;
 }

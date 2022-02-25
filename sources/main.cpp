@@ -94,7 +94,7 @@ int main()
 		glUniformMatrix4fv(perspective_loc, 1, GL_TRUE, p.ptr());
 		glUniformMatrix4fv(view_loc, 1, GL_TRUE, camera.view().ptr());
 
-		Scene scene("assets/resources/chess_board.obj");
+		Scene scene("assets/resources/iphone.obj");
 
 		float i = 0;
 		float j = 0;
