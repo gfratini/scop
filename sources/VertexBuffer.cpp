@@ -13,23 +13,34 @@ VertexBuffer::VertexBuffer()
 	glGenBuffers(1, &_buffer_id);
 }
 
+VertexBuffer::VertexBuffer(const VertexBuffer &v)
+{
+	_num = v.len();
+	_usage = v._usage;
+	_vertices = new float [_num * VERTEX_SIZE];
+	for (unsigned int i = 0; i < _num * VERTEX_SIZE; ++i)
+		_vertices[i] = v.vertices()[i];
+	glGenBuffers(1, &_buffer_id);
+
+	glBindBuffer(GL_ARRAY_BUFFER, _buffer_id);
+	glBufferData(GL_ARRAY_BUFFER, (VERTEX_SIZE * _num), _vertices, _usage);
+}
+
 VertexBuffer::~VertexBuffer() {
-//	glDeleteBuffers(1, &_buffer_id);
+	delete[] _vertices;
+	glDeleteBuffers(1, &_buffer_id);
 }
 
 VertexBuffer::VertexBuffer(const float *vertices, const unsigned int num, GLenum usage) {
 	_num = num;
+	_usage = usage;
+	_vertices = new float[_num * VERTEX_SIZE];
+	for (unsigned int i = 0; i < _num * VERTEX_SIZE; ++i)
+		_vertices[i] = vertices[i];
 	_buffer_id = 0;
 	glGenBuffers(1, &_buffer_id);
-	if (_buffer_id % 2 == 0) {
-		unsigned int tmp = _buffer_id;
-		glGenBuffers(1, &_buffer_id);
-		glDeleteBuffers(1, &tmp);
-	}
 	glBindBuffer(GL_ARRAY_BUFFER, _buffer_id);
-	glBufferData(GL_ARRAY_BUFFER, (sizeof(Vertex) * _num), vertices, usage);
-
-	std::cout << _buffer_id << std::endl;
+	glBufferData(GL_ARRAY_BUFFER, (VERTEX_SIZE * _num), _vertices, usage);
 }
 
 void VertexBuffer::bind() const {
@@ -40,7 +51,11 @@ void VertexBuffer::set_vertices(const float *vertices, const unsigned int num, G
 	bind();
 
 	_num = num;
-	glBufferData(GL_ARRAY_BUFFER, (sizeof(Vertex) * num), vertices, usage);
+	_usage = usage;
+	_vertices = new float[_num * VERTEX_SIZE];
+	for (unsigned int i = 0; i < _num * VERTEX_SIZE; ++i)
+		_vertices[i] = vertices[i];
+	glBufferData(GL_ARRAY_BUFFER, (VERTEX_SIZE * num), _vertices, usage);
 
 }
 
@@ -50,4 +65,8 @@ int VertexBuffer::len() const {
 
 unsigned int VertexBuffer::id() const {
 	return _buffer_id;
+}
+
+const float *VertexBuffer::vertices() const {
+	return _vertices;
 }

@@ -143,7 +143,7 @@ public:
 	}
 
 	inline Mat4	operator*(const Mat4& m) {
-		auto C = new float[mat_len*mat_len];
+		float C[mat_len*mat_len];
 		int col;
 		for (unsigned int k = 0; k < mat_len; k++) {
 			col = 0;

@@ -100,7 +100,6 @@ VertexBuffer parse2(std::ifstream& file, std::vector<coordinates>& c) {
 		}
 	}
 
-	std::cout << i.size() << "  " << c.size() << std::endl;
 	auto fixed = fix_tex(c, i);
 
 	for (unsigned int i = 0; i < fixed.size(); ++i) {
@@ -123,7 +122,7 @@ std::vector<Object> Parser::parse(const std::string &file) {
 		throw std::runtime_error(file + " not found");
 
 	while (!f.eof())
-		vec.push_back(Object(parse2(f, coords), "assets/textures/wall.jpg", GL_TEXTURE0));
+		vec.emplace_back(parse2(f, coords), "assets/textures/wall.jpg", GL_TEXTURE0);
 
 	return vec;
 }

@@ -4,9 +4,6 @@
 
 #include "Object.hpp"
 #include "utils.hpp"
-Object::Object() {
-	_use_ibo = false;
-}
 
 Object::Object(const VertexBuffer &obj, const Texture& tex)
  :  _vertex_buffer(obj),

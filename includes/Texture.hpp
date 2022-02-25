@@ -16,11 +16,12 @@ private:
 	unsigned int texture_id;
 	GLenum _pos;
 	unsigned int location;
+	std::string	file;
 
 public:
-	Texture();
 	Texture(const std::string& file, GLenum unit);
 	~Texture();
+	Texture(const Texture& t);
 
 	void	create(const std::string& file, GLenum unit);
 	void	bind(const ShaderProgram& s);
