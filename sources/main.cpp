@@ -10,8 +10,8 @@ int		m_down = 0;
 int		run = 0;
 
 int		light = 0;
-int		solid = 0;
-
+float	solid = 1.0f;
+int		transition = 0;
 float 	lightLevel = 5;
 
 double		last_update = 0;
@@ -41,11 +41,11 @@ void	callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 		int loc2 = glGetUniformLocation(shader_id, "isSolid");
 		if (render == GL_LINE) {
 			glUniform1i(loc, 1);
-			glUniform1i(loc2, 1);
+			glUniform1f(loc2, 1);
 		}
 		else {
 			glUniform1i(loc, light);
-			glUniform1i(loc2, solid);
+			glUniform1f(loc2, solid);
 		}
 		glPolygonMode(GL_FRONT_AND_BACK, render);
 	}
@@ -57,9 +57,9 @@ void	callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	}
 
 	if (key == 'T' && action == GLFW_PRESS && render == GL_FILL) {
-		solid = !solid;
+		transition = solid > 0.1f ? -1 : 1;
 		int loc = glGetUniformLocation(shader_id, "isSolid");
-		glUniform1i(loc, solid);
+		glUniform1f(loc, solid);
 	}
 
 	if (key == GLFW_KEY_KP_ADD) {
@@ -79,6 +79,8 @@ void	callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	else if (key == 'D') m_right = val;
 	else if (key == GLFW_KEY_LEFT_SHIFT && action == GLFW_PRESS) run = 1;
 	else if (key == GLFW_KEY_LEFT_SHIFT && action == GLFW_RELEASE) run = 0;
+	else if (key == GLFW_KEY_LEFT_CONTROL && action == GLFW_PRESS) run = -1;
+	else if (key == GLFW_KEY_LEFT_CONTROL && action == GLFW_RELEASE) run = 0;
 }
 
 void move(int view_loc) {
@@ -86,6 +88,13 @@ void move(int view_loc) {
 
 	if (new_time - last_update >= MIN_UPDATE_TIME) {
 		last_update = new_time;
+		if (transition) {
+			solid += transition > 0 ? 0.01f : -0.01f;
+			if (solid >= 1.0f || solid <= 0.0f)
+				transition = 0;
+			int loc = glGetUniformLocation(shader_id, "isSolid");
+			glUniform1f(loc, solid);
+		}
 		camera.move(m_up, m_down, m_right, m_left, run);
 		glUniformMatrix4fv(view_loc, 1, GL_TRUE, camera.view().ptr());
 	}
@@ -93,10 +102,13 @@ void move(int view_loc) {
 
 int main(int argc, const char ** argv)
 {
-	if (argc == 1) {
-		std::cout << "Usage:\n  scop file_to_render.obj [texture_file]";
+	if (argc == 1 || argc > 3) {
+		std::cout << "Usage:\n  scop file_to_render.obj [texture_file]" << std::endl;
 		exit(1);
 	}
+	std::string tex;
+	if (argc == 3)
+		tex = argv[2];
 	const unsigned int WIDTH = 1920;
 	const unsigned int HEIGHT = 1080;
 	int	exit_status = 0;
@@ -123,9 +135,10 @@ int main(int argc, const char ** argv)
 
 		Mat4 		p = perspective(WIDTH, HEIGHT, 0.1, 1000, 60);
 		glUniformMatrix4fv(perspective_loc, 1, GL_TRUE, p.ptr());
+		camera.move(m_up, m_down, m_right, m_left, run);
 		glUniformMatrix4fv(view_loc, 1, GL_TRUE, camera.view().ptr());
 
-		Scene scene(argv[1], "");
+		Scene scene(argv[1], tex);
 
 		float i = 0;
 		float j = 0;

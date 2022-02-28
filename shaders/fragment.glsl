@@ -7,7 +7,7 @@ in vec2 TexCoord;
 in float depth;
 uniform sampler2D tex;
 uniform bool isWireframe;
-uniform bool isSolid;
+uniform float isSolid;
 uniform float lightLevel;
 
 void main()
@@ -21,10 +21,7 @@ void main()
     } else {
         light = 1;
     }
-    if (!isSolid) {
-        col = texture(tex, TexCoord) * light;
-    } else {
-        col = vec4(1.0, 1.0, 1.0, 1.0) * light;
-    }
-    FragColor = col;
+    col = texture(tex, TexCoord) * light;
+
+    FragColor = mix(col, vec4(1.0,1.0,1.0,1.0), isSolid);
 }

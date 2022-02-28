@@ -11,10 +11,6 @@ Scene::Scene(const std::string &scene_file, std::string tex) {
 	rot = 0;
 }
 
-//Scene::Scene(const std::string &scene_file, const std::string &def_texture) {
-//	//objects
-//}
-
 Scene::~Scene() {
 
 }

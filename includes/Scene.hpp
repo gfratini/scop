@@ -14,7 +14,6 @@ private:
 
 public:
 	Scene(const std::string& scene_file, std::string tex);
-//	Scene(const std::string& scene_file, const std::string& def_texture);
 	~Scene();
 
 	void	render(const ShaderProgram& s);

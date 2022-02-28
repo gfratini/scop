@@ -56,6 +56,12 @@ void Texture::create(const std::string &filename, GLenum unit) {
 	int width, height, nrChannels;
 	unsigned char *data = stbi_load(file.c_str(), &width, &height, &nrChannels, 0);
 
+	int color_type;
+	if (file.find(".png") != std::string::npos)
+		color_type = GL_RGBA;
+	else
+		color_type = GL_RGB;
+
 	if (!data)
 		throw std::runtime_error("Texture " + file + " not found");
 	glGenTextures(1, &texture_id);
@@ -65,7 +71,7 @@ void Texture::create(const std::string &filename, GLenum unit) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, color_type, GL_UNSIGNED_BYTE, data);
 	glGenerateMipmap(GL_TEXTURE_2D);
 	stbi_image_free(data);
 }

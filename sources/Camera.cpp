@@ -10,6 +10,7 @@ Camera::Camera() {
 	first_input = true;
 	last_pos[0] = 0;
 	last_pos[1] = 0;
+	_front = {0.0f, 0.0f, -1.0f};
 }
 
 Camera::Camera(Vec3 position) :Camera() {this->position = position; }
@@ -58,8 +59,10 @@ void Camera::move(int front, int back, int right, int left, int run) {
 	}
 	if (front && !back) {
 		float mod_speed = speed;
-		if (run)
+		if (run > 0)
 			mod_speed *= 2.5;
+		else if (run < 0)
+			mod_speed /= 2.5;
 		Vec3 v = _front * mod_speed;
 		position += v;
 	} else if (back && !front) {

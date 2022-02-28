@@ -106,7 +106,7 @@ VertexBuffer parse2(std::ifstream& file, std::vector<coordinates>& c) {
 	int left_down = 0;
 
 	for (int j = 0; j < fixed.size(); ++j) {
-		if (fixed[j].x < fixed[left_down].x && fixed[j].y < fixed[left_down].y && fixed[j].z < fixed[left_down].z)
+		if (fixed[j].x > fixed[left_down].x && fixed[j].y < fixed[left_down].y && fixed[j].z > fixed[left_down].z)
 			left_down = j;
 	}
 
@@ -114,7 +114,7 @@ VertexBuffer parse2(std::ifstream& file, std::vector<coordinates>& c) {
 		vertices.push_back(fixed[i].x);
 		vertices.push_back(fixed[i].y);
 		vertices.push_back(fixed[i].z);
-		vertices.push_back(fixed[i].x - fixed[left_down].x);
+		vertices.push_back(fixed[i].z - fixed[left_down].z);
 		vertices.push_back(fixed[i].y - fixed[left_down].y);
 	}
 
