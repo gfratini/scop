@@ -11,7 +11,7 @@ int		run = 0;
 
 int		light = 0;
 float	solid = 1.0f;
-int		transition = 0;
+int		transition = -1;
 float 	lightLevel = 5;
 
 double		last_update = 0;
@@ -57,17 +57,15 @@ void	callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	}
 
 	if (key == 'T' && action == GLFW_PRESS && render == GL_FILL) {
-		transition = solid > 0.1f ? -1 : 1;
-		int loc = glGetUniformLocation(shader_id, "isSolid");
-		glUniform1f(loc, solid);
+		transition = solid > 0.5f ? -1 : 1;
 	}
 
-	if (key == GLFW_KEY_KP_ADD) {
+	if ((key == GLFW_KEY_KP_ADD || key == 'R') && action != GLFW_RELEASE) {
 		lightLevel += 0.5;
 		int loc = glGetUniformLocation(shader_id, "lightLevel");
 		glUniform1f(loc, lightLevel);
 	}
-	if (key == GLFW_KEY_KP_SUBTRACT) {
+	if ((key == GLFW_KEY_KP_SUBTRACT || key == 'F') && action != GLFW_RELEASE) {
 		lightLevel -= 0.5;
 		int loc = glGetUniformLocation(shader_id, "lightLevel");
 		glUniform1f(loc, lightLevel);

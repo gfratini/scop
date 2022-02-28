@@ -21,7 +21,7 @@ void main()
     } else {
         light = 1;
     }
-    col = texture(tex, TexCoord) * light;
+    col = texture(tex, TexCoord);
 
-    FragColor = mix(col, vec4(1.0,1.0,1.0,1.0), isSolid);
+    FragColor = mix(col, vec4(1.0,1.0,1.0,1.0), isSolid) * light;
 }
