@@ -85,9 +85,10 @@ std::vector<coordinates> fix_tex(const std::vector<coordinates>& c, const std::v
 
 VertexBuffer parse2(std::ifstream& file, std::vector<coordinates>& c) {
 	std::string					line;
-	std::vector<unsigned int>	i;
+	std::vector<unsigned int>	indices;
 	bool						faces = false;
 	std::vector<float>	vertices;
+
 
 	while (std::getline(file, line)) {
 		if (faces && line.find("f ") != 0) break;
@@ -96,11 +97,11 @@ VertexBuffer parse2(std::ifstream& file, std::vector<coordinates>& c) {
 		} else if (line.find("f ") == 0) {
 			faces = true;
 			auto tmp = parse_face(line.substr(2));
-			i.insert(i.end(), tmp.begin(), tmp.end());
+			indices.insert(indices.end(), tmp.begin(), tmp.end());
 		}
 	}
 
-	auto fixed = fix_tex(c, i);
+	auto fixed = fix_tex(c, indices);
 
 	int left_down = 0;
 
@@ -121,7 +122,7 @@ VertexBuffer parse2(std::ifstream& file, std::vector<coordinates>& c) {
 }
 
 
-std::vector<Object> Parser::parse(const std::string &file) {
+std::vector<Object> Parser::parse(const std::string &file, const Texture& t) {
 	std::ifstream		f(file);
 	std::vector<Object>	vec;
 
@@ -129,7 +130,7 @@ std::vector<Object> Parser::parse(const std::string &file) {
 		throw std::runtime_error(file + " not found");
 
 	while (!f.eof())
-		vec.emplace_back(parse2(f, coords), "assets/textures/salveenee.jpg", GL_TEXTURE0);
+		vec.emplace_back(parse2(f, coords), t);
 
 	return vec;
 }

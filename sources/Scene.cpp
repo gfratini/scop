@@ -4,14 +4,16 @@
 
 #include "Scene.hpp"
 
-Scene::Scene(const std::string &scene_file) {
-	objects = Parser().parse(scene_file);
+Scene::Scene(const std::string &scene_file, std::string tex) {
+	if (tex.empty()) tex = "assets/textures/wall.jpg";
+	Texture t(tex, GL_TEXTURE0);
+	objects = Parser().parse(scene_file, t);
 	rot = 0;
 }
 
-Scene::Scene(const std::string &scene_file, const std::string &def_texture) {
-	//objects
-}
+//Scene::Scene(const std::string &scene_file, const std::string &def_texture) {
+//	//objects
+//}
 
 Scene::~Scene() {
 

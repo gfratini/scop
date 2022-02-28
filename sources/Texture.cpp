@@ -57,7 +57,7 @@ void Texture::create(const std::string &filename, GLenum unit) {
 	unsigned char *data = stbi_load(file.c_str(), &width, &height, &nrChannels, 0);
 
 	if (!data)
-		throw std::runtime_error("Texture asdasdasd" + file + " not found");
+		throw std::runtime_error("Texture " + file + " not found");
 	glGenTextures(1, &texture_id);
 	glActiveTexture(_pos);
 	glBindTexture(GL_TEXTURE_2D, texture_id);

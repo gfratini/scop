@@ -9,6 +9,7 @@
 #include "VertexBuffer.hpp"
 #include "IndexBuffer.hpp"
 #include "ShaderProgram.hpp"
+#include "Texture.hpp"
 class Object;
 
 struct coordinates {
@@ -39,7 +40,7 @@ private:
 
 public:
 	Parser();
-	std::vector<Object> parse(const std::string& file);
+	std::vector<Object> parse(const std::string& file, const Texture& t);
 
 };
 

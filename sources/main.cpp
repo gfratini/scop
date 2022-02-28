@@ -10,6 +10,9 @@ int		m_down = 0;
 int		run = 0;
 
 int		light = 0;
+int		solid = 0;
+
+float 	lightLevel = 5;
 
 double		last_update = 0;
 
@@ -32,13 +35,18 @@ void	callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, 1);
 
-	if (key == 'T' && action == GLFW_PRESS) {
+	if (key == 'X' && action == GLFW_PRESS) {
 		render = render == GL_FILL ? GL_LINE : GL_FILL;
 		int loc = glGetUniformLocation(shader_id, "isWireframe");
-		if (render == GL_LINE)
+		int loc2 = glGetUniformLocation(shader_id, "isSolid");
+		if (render == GL_LINE) {
 			glUniform1i(loc, 1);
-		else
+			glUniform1i(loc2, 1);
+		}
+		else {
 			glUniform1i(loc, light);
+			glUniform1i(loc2, solid);
+		}
 		glPolygonMode(GL_FRONT_AND_BACK, render);
 	}
 
@@ -46,6 +54,23 @@ void	callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 		light = !light;
 		int loc = glGetUniformLocation(shader_id, "isWireframe");
 		glUniform1i(loc, light);
+	}
+
+	if (key == 'T' && action == GLFW_PRESS && render == GL_FILL) {
+		solid = !solid;
+		int loc = glGetUniformLocation(shader_id, "isSolid");
+		glUniform1i(loc, solid);
+	}
+
+	if (key == GLFW_KEY_KP_ADD) {
+		lightLevel += 0.5;
+		int loc = glGetUniformLocation(shader_id, "lightLevel");
+		glUniform1f(loc, lightLevel);
+	}
+	if (key == GLFW_KEY_KP_SUBTRACT) {
+		lightLevel -= 0.5;
+		int loc = glGetUniformLocation(shader_id, "lightLevel");
+		glUniform1f(loc, lightLevel);
 	}
 
 	if (key == 'W') m_up = val;
@@ -68,8 +93,8 @@ void move(int view_loc) {
 
 int main(int argc, const char ** argv)
 {
-	if (argc != 2) {
-		std::cout << "Invalid arguments, please provide a .obj file to render!";
+	if (argc == 1) {
+		std::cout << "Usage:\n  scop file_to_render.obj [texture_file]";
 		exit(1);
 	}
 	const unsigned int WIDTH = 1920;
@@ -91,6 +116,8 @@ int main(int argc, const char ** argv)
 
 		int perspective_loc = glGetUniformLocation(shader.id(), "perspective");
 		int view_loc = glGetUniformLocation(shader.id(), "view");
+		int loc = glGetUniformLocation(shader.id(), "lightLevel");
+		glUniform1f(loc, lightLevel);
 
 		VertexArrayBuffer	array_buffer;
 
@@ -98,7 +125,7 @@ int main(int argc, const char ** argv)
 		glUniformMatrix4fv(perspective_loc, 1, GL_TRUE, p.ptr());
 		glUniformMatrix4fv(view_loc, 1, GL_TRUE, camera.view().ptr());
 
-		Scene scene(argv[1]);
+		Scene scene(argv[1], "");
 
 		float i = 0;
 		float j = 0;
